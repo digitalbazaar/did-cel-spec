@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>The did:cel Method v0.3</title>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <!--
+      === NOTA BENE ===
+      For the three scripts below, if your spec resides on dev.w3 you can check them
+      out in the same tree and use relative links so that they'll work offline,
+     -->
+    <script src='https://www.w3.org/Tools/respec/respec-w3c' class='remove'></script>
+    <script src="https://cdn.jsdelivr.net/gh/digitalbazaar/respec-vc@3.4.2/dist/main.js" class="remove"></script>
+    <script type="text/javascript" class="remove">
+      var respecConfig = {
+        // specification status (e.g., WD, LCWD, NOTE, etc.). If in doubt use ED.
+        specStatus: "CG-DRAFT",
+
+        // the specification's short name, as in http://www.w3.org/TR/short-name/
+        shortName: "did-cel",
+
+        // subtitle for the spec
+        subtitle: "A DID Method based on witnessed cryptographic event logs",
+
+        // if you wish the publication date to be other than today, set this
+        //publishDate: "",
+        //crEnd: "",
+        //prEnd: "",
+        //implementationReportURI: "",
+
+        // if there is a previously published draft, uncomment this and set its YYYY-MM-DD date
+        // and its maturity status
+        // previousPublishDate:  "1977-03-15",
+        // previousMaturity:  "WD",
+
+        // extend the bibliography entries
+        localBiblio: {
+          'THORMARKER': {
+            title: 'On using the same key pair for Ed25519 and an X25519 based KEM',
+            href: 'https://eprint.iacr.org/2021/509.pdf',
+            authors: ['Erik Thormarker'],
+            status: 'Internet-Draft',
+            publisher: 'Cryptology ePrint Archive'
+          }
+        },
+        doJsonLd: true,
+
+        github: "https://github.com/w3c-ccg/did-cel-spec",
+        includePermalinks: false,
+
+        // if there a publicly available Editor's Draft, this is the link
+        edDraftURI: "https://w3c-ccg.github.io/did-cel-spec/",
+
+        // if this is a LCWD, uncomment and set the end of its review period
+        // lcEnd: "2009-08-05",
+
+        // editors, add as many as you like
+        // only "name" is required
+        editors: [
+          { name: "Manu Sporny", url: "https://digitalbazaar.com/",
+            company: "Digital Bazaar", companyURL: "https://digitalbazaar.com/" }
+        ],
+        // authors, add as many as you like.
+        // This is optional, uncomment if you have authors as well as editors.
+        // only "name" is required. Same format as editors.
+        authors:
+        [
+          { name: "Dave Longley", url: "https://digitalbazaar.com/",
+            company: "Digital Bazaar", companyURL: "https://digitalbazaar.com/"},
+          { name: "Manu Sporny", url: "https://digitalbazaar.com/",
+            company: "Digital Bazaar", companyURL: "https://digitalbazaar.com/" }
+        ],
+        group: 'credentials',
+
+        // URI of the patent status for this WG, for Rec-track documents
+        // !!!! IMPORTANT !!!!
+        // This is important for Rec-track documents, do not copy a patent URI from a random
+        // document unless you know what you're doing. If in doubt ask your friendly neighborhood
+        // Team Contact.
+        wgPatentURI:  "https://www.w3.org/2004/01/pp-impl/98922/status",
+        maxTocLevel: 2,
+        inlineCSS: true,
+        postProcess: [],
+        xref: ["web-platform", "cid", "did", "vc-data-model"],
+        lint: {
+          "informative-dfn": false
+        },
+        otherLinks: [{
+          key: "Related Documents",
+          data: [{
+            value: "Controlled Identifiers v1.0",
+            href: "https://www.w3.org/TR/cid/"
+          }, {
+            value: "Decentralized Identifiers v1.0",
+            href: "https://www.w3.org/TR/did/"
+          }, {
+            value: "DID Use Cases and Requirements",
+            href: "https://www.w3.org/TR/did-use-cases/"
+          }, {
+            value: "DID Core Implementation Report",
+            href: "https://w3c.github.io/did-test-suite/"
+          }]
+        }]
+      };
+    </script>
+    <style>
+pre .highlight {
+  font-weight: bold;
+  color: Green;
+}
+pre .subject {
+  font-weight: bold;
+  color: RoyalBlue;
+}
+pre .property {
+  font-weight: bold;
+  color: DarkGoldenrod;
+}
+pre .comment {
+  font-weight: bold;
+  color: SteelBlue;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.color-text {
+  font-weight: bold;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+ol.algorithm { counter-reset:numsection; list-style-type: none; }
+ol.algorithm li { margin: 0.5em 0; }
+ol.algorithm li:before { font-weight: bold; counter-increment: numsection; content: counters(numsection, ".") ") "; }
+    </style>
+  </head>
+  <body>
+    <section id='abstract'>
+      <p>
+[=Decentralized Identifiers=] (DIDs) are a type of identifier for verifiable,
+decentralized digital identity. These identifiers are designed to enable the
+[=controller=] of a DID to prove control over the identifier in a way that is
+independent of any centralized registry, identity provider, or certificate authority.
+These sorts of identifiers often utilize a heavy-weight registry, such as ones
+utilizing Decentralized Ledger Technologies (DLT), to create, read, update,
+and deactivate DIDs. This specification describes a witness-based [=DID
+Method=] where each DID Document's history is contained in a cryptographic
+event log where each event is witnessed by one or more trusted entities. The
+approach avoids the need for complex decentralized consensus algorithms as well
+as expensive proof-of-work or proof-of-stake systems.
+      </p>
+    </section>
+
+    <section id='sotd'>
+
+      <p>
+      </p>
+
+    </section>
+
+    <section class="informative">
+      <h2>Introduction</h2>
+
+      <section id="conformance"></section>
+
+    </section>
+
+    <section class="normative">
+      <h2>did:cel Identifier Syntax</h2>
+
+      <p>
+The format for the `did:cel` method conforms to the [[[DID]]] specification and
+is simple. It consists of the `did:cel` prefix, followed by a <a
+data-cite="CID#Multibase">Multibase</a> base58-btc encoded value
+that is a concatenation of the <a data-cite="CID#Multihash">Multihash</a>
+identifier and the corresponding cryptographic digest for the initial
+cryptographic event log entry.
+      </p>
+
+      <p>
+The ABNF for the key format is described below:
+      </p>
+
+      <pre>
+did-cel-format := did:cel:&lt;mb-value>
+mb-value       := z[a-km-zA-HJ-NP-Z1-9]+
+      </pre>
+
+      <p>
+Alternatively, the encoding rules can also be thought of as the application
+of a series of transformation functions on the raw public key bytes:
+      </p>
+
+      <tt>
+did-cel-identifier := did:cel:MULTIBASE(base58-btc, MULTICODEC(sha3-256, JCS(initial-event-log-entry)))
+      </tt>
+
+      <p>
+A simple example of a valid `did:cel` DID is:
+      </p>
+
+      <pre class="example" title="A valid did:cel identifier">
+did:cel:TODO
+      </pre>
+
+    </section>
+
+    <section class="normative">
+      <h2>Operations</h2>
+
+      <p>
+The following section outlines the DID operations for the `did:cel` method.
+      </p>
+
+      <section class="normative">
+        <h3>Create</h3>
+
+        <p>
+
+        </p>
+
+        <pre class="example" title="An example did:cel DID Document"
+        style="font-size: 0.65em;">
+{
+  "@context": [
+    "https://www.w3.org/ns/did/v1.1"
+  ],
+  "id": "did:cel:TODO",
+  "verificationMethod": [{
+    "id": "did:cel:TODO#TODO",
+    "type": "Multikey",
+    "controller": "did:cel:TODO",
+    "publicKeyMultibase": "TODO"
+  }],
+  "authentication": [
+    "did:cel:TODO#TODO"
+  ],
+  "assertionMethod": [
+    "did:cel:TODO#TODO"
+  ],
+  "capabilityDelegation": [
+    "did:cel:TODO#TODO"
+  ],
+  "capabilityInvocation": [
+    "did:cel:TODO#TODO"
+  ],
+  "keyAgreement": [{
+    "id": "did:cel:TODO#z6LSj72tK8brWgZja8NLRwPigth2T9QRiG1uH9oKZuKjdh9p",
+    "type": "Multikey",
+    "controller": "did:cel:TODO",
+    "publicKeyMultibase": "z6LSj72tK8brWgZja8NLRwPigth2T9QRiG1uH9oKZuKjdh9p"
+  }]
+}
+        </pre>
+
+        <section class="normative">
+          <h4>Document Creation Algorithm</h4>
+
+          <p>
+          </p>
+
+          <ol class="algorithm">
+            <li>
+            </li>
+          </ol>
+
+        </section>
+
+      </section>
+
+      <section class="normative">
+        <h3>Read</h3>
+
+        <p>
+        </p>
+
+      </section>
+
+      <section class="normative">
+        <h3>Update</h3>
+
+        <p>
+        </p>
+
+      </section>
+
+      <section class="normative">
+        <h3>Deactivate</h3>
+
+        <p>
+        </p>
+      </section>
+
+    </section>
+
+    <section class="informative">
+      <h2>Privacy Considerations</h2>
+
+      <p>
+This section contains a variety of privacy considerations that people using
+the `did:cel` Method are advised to consider before deploying this
+technology in a production setting. Readers are urged to read the
+<a data-cite="?CID#privacy-considerations">Privacy Considerations</a> section
+of the [[[CID]]] specification, as well as the
+<a data-cite="?DID#privacy-considerations">Privacy Considerations</a> section
+of the [[[DID]]] specification, before reading this section.
+      </p>
+
+    </section>
+
+    <section class="informative">
+      <h2>Security Considerations</h2>
+
+      <p>
+This section contains a variety of security considerations that people using
+the `did:cel` Method are advised to consider before deploying this
+technology in a production setting. Readers are urged to read the
+<a data-cite="?CID#security-considerations">Security Considerations</a> section
+of the [[[CID]]] specification, as well as the
+<a data-cite="?DID#security-considerations">Security Considerations</a> section
+of the [[[DID]]] specification, before reading this section.
+      </p>
+
+    </section>
+
+  </section>
+
+  <section class="appendix informative">
+    <h2>Acknowledgements</h2>
+
+    <p>
+The Working Group would like to thank the following individuals for reviewing
+and providing feedback on the specification (in alphabetical order):
+    </p>
+
+    <p>
+TBD...
+    </p>
+  </section>
+  </body>
+</html>
