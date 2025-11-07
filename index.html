@@ -321,6 +321,161 @@ The following section outlines the DID operations for the `did:cel` method.
         <p>
         </p>
 
+        <pre class="example nohighlight" title="Cryptographic event log after did:cel update">
+{
+  "log": [
+    {
+      "@context": [
+        "https://w3id.org/security/data-integrity/v2"
+      ],
+      "event": {
+        "operation": {
+          "type": "create",
+          "data": {
+            "@context": "https://www.w3.org/ns/did/v1.1",
+            "id": "did:cel:zW1mbTRxfghnLr9foA7Bs3N6sbUjrvbJE9tU5Vs57ovQ4FZ",
+            "assertionMethod": [
+              {
+                "id": "#zDnaeqBsgsyrkoEkXKD2VvSheXomaEwYtu9GMhHES8L47sVnQ",
+                "type": "Multikey",
+                "controller": "did:cel:zW1mbTRxfghnLr9foA7Bs3N6sbUjrvbJE9tU5Vs57ovQ4FZ",
+                "publicKeyMultibase": "zDnaeqBsgsyrkoEkXKD2VvSheXomaEwYtu9GMhHES8L47sVnQ"
+              }
+            ],
+            "proof": {
+              "@context": [
+                "https://www.w3.org/ns/did/v1.1",
+                "https://w3id.org/security/data-integrity/v2"
+              ],
+              "type": "DataIntegrityProof",
+              "cryptosuite": "ecdsa-jcs-2019",
+              "created": "2025-11-07T03:25:33Z",
+              "proofPurpose": "assertionMethod",
+              "proofValue": "z3p4hNM1PckpgRyaBr7V6kCjNrofPWFu5LYGpEXWXMcUE2hekuCTcR6nyVxfV8MHZmn3upWArWypsBeGf9mricoqW"
+            }
+          }
+        }
+      },
+      "proof": [
+        {
+          "@context": [
+            "https://w3id.org/security/data-integrity/v2"
+          ],
+          "type": "DataIntegrityProof",
+          "cryptosuite": "ecdsa-jcs-2019",
+          "created": "2025-11-07T03:25:33Z",
+          "proofPurpose": "assertionMethod",
+          "proofValue": "z66FEPQzsuFrNUbt8W3JMi957DHHPmpH3r3LwCxcgF2Zxxrnb3aW88uvyCkQMoJJuvNjkbSmST1azQ6HHdFJQf5f",
+          "verificationMethod": "did:web:red-witness.example#vm-red-1"
+        },
+        {
+          "@context": [
+            "https://w3id.org/security/data-integrity/v2"
+          ],
+          "type": "DataIntegrityProof",
+          "cryptosuite": "ecdsa-jcs-2019",
+          "created": "2025-11-07T03:25:33Z",
+          "proofPurpose": "assertionMethod",
+          "proofValue": "z5ochURUGx6tYJ11F8huXNuQeoCCivcrPGhNMcYxj2QNvmBmdfyoGM1T1JnkAYdUF5m6VfkWW56xV9hwAVhJEZWHe",
+          "verificationMethod": "did:web:green-witness.example#vm-green-1"
+        },
+        {
+          "@context": [
+            "https://w3id.org/security/data-integrity/v2"
+          ],
+          "type": "DataIntegrityProof",
+          "cryptosuite": "ecdsa-jcs-2019",
+          "created": "2025-11-07T03:25:33Z",
+          "proofPurpose": "assertionMethod",
+          "proofValue": "z45483ZaDAvFk9o5fnBq1aKDQsFDyR3uXvYaSDBbBhHdBMtUvqdj6cRFSPZfQDs8aX3S8B4TFc7NcVtHExE8H7UVH",
+          "verificationMethod": "did:web:blue-witness.example#vm-blue-1"
+        }
+      ]
+    },
+    {
+      "@context": [
+        "https://w3id.org/security/data-integrity/v2"
+      ],
+      "event": {
+        "previousEvent": "zW1dcb1VUKj83muArGz5FxrSNUxFxbz8VKKz1GzbH1euTmA",
+        "operation": {
+          "type": "update",
+          "data": {
+            "didDocument": {
+              "@context": [
+                "https://www.w3.org/ns/did/v1.1",
+                "https://w3id.org/security/data-integrity/v2"
+              ],
+              "id": "did:cel:zW1mbTRxfghnLr9foA7Bs3N6sbUjrvbJE9tU5Vs57ovQ4FZ",
+              "assertionMethod": [
+                {
+                  "id": "#zDnaeqBsgsyrkoEkXKD2VvSheXomaEwYtu9GMhHES8L47sVnQ",
+                  "type": "Multikey",
+                  "controller": "did:cel:zW1mbTRxfghnLr9foA7Bs3N6sbUjrvbJE9tU5Vs57ovQ4FZ",
+                  "publicKeyMultibase": "zDnaeqBsgsyrkoEkXKD2VvSheXomaEwYtu9GMhHES8L47sVnQ"
+                }
+              ],
+              "authentication": [
+                {
+                  "id": "#zDnaewNnthuSmcwT6cbXyC6en2MmEavHxt8xgSRSSdrkDRCb9",
+                  "type": "Multikey",
+                  "controller": "did:cel:zW1mbTRxfghnLr9foA7Bs3N6sbUjrvbJE9tU5Vs57ovQ4FZ",
+                  "publicKeyMultibase": "zDnaewNnthuSmcwT6cbXyC6en2MmEavHxt8xgSRSSdrkDRCb9"
+                }
+              ],
+              "proof": {
+                "@context": [
+                  "https://www.w3.org/ns/did/v1.1",
+                  "https://w3id.org/security/data-integrity/v2"
+                ],
+                "type": "DataIntegrityProof",
+                "cryptosuite": "ecdsa-jcs-2019",
+                "created": "2025-11-07T03:25:33Z",
+                "proofPurpose": "assertionMethod",
+                "proofValue": "z2GjeuDePLf4Er9t4oeXCKbhn6eVv3vXvNEJy1tLGabKB13fUkEvZcRSYBjy6ZrRiLE7DrjDsGJ1F2Uxqm5BWHMc3"
+              }
+            }
+          }
+        }
+      },
+      "proof": [
+        {
+          "@context": [
+            "https://w3id.org/security/data-integrity/v2"
+          ],
+          "type": "DataIntegrityProof",
+          "cryptosuite": "ecdsa-jcs-2019",
+          "created": "2025-11-07T03:25:33Z",
+          "proofPurpose": "assertionMethod",
+          "proofValue": "z347rEdY6NS5wWHAhSEwWmmGg2iZL9RtNCp8CBtftMJ5fQ4zP1RgvMZ3mPBFYMv2J2F1Za9tuNfWkRGzS8Ei1eZyn",
+          "verificationMethod": "did:web:red-witness.example#vm-red-1"
+        },
+        {
+          "@context": [
+            "https://w3id.org/security/data-integrity/v2"
+          ],
+          "type": "DataIntegrityProof",
+          "cryptosuite": "ecdsa-jcs-2019",
+          "created": "2025-11-07T03:25:33Z",
+          "proofPurpose": "assertionMethod",
+          "proofValue": "z5SfvPLgpYV2CFUnavzx75NZX6QnHQtyCrJdP5DBYtzZjHVg7KWR6sJ7Fu3xKmPcALrnKYuHAzPJRd28yuMWjxMyN",
+          "verificationMethod": "did:web:green-witness.example#vm-green-1"
+        },
+        {
+          "@context": [
+            "https://w3id.org/security/data-integrity/v2"
+          ],
+          "type": "DataIntegrityProof",
+          "cryptosuite": "ecdsa-jcs-2019",
+          "created": "2025-11-07T03:25:33Z",
+          "proofPurpose": "assertionMethod",
+          "proofValue": "zLsxStyAEEbLqgpwJtQ24k6fPH3cQkCnih2tw9nZ8Kje8oR9ERVWPtjqJ2qxhXNHPF9899z4Yk9dU7jagYkapmsw",
+          "verificationMethod": "did:web:blue-witness.example#vm-blue-1"
+        }
+      ]
+    }
+  ]
+}
         </pre>
       </section>
 
