@@ -217,6 +217,81 @@ The following section outlines the DID operations for the `did:cel` method.
 
         </p>
 
+        <pre class="example nohighlight" title="Cryptographic event log after did:cel creation">
+{
+  "log": [
+    {
+      "@context": [
+        "https://w3id.org/security/data-integrity/v2"
+      ],
+      "event": {
+        "operation": {
+          "type": "create",
+          "data": {
+            "@context": "https://www.w3.org/ns/did/v1.1",
+            "id": "did:cel:zW1mDyhheeVLHyuhSHa1myBVHUhGuoNP3gnqHy1J36cPiyj",
+            "assertionMethod": [
+              {
+                "id": "#zDnaek5jEyLavyq5Gi5byrCwoY93p5Rwb8Cx6baiuXWcjGu56",
+                "type": "Multikey",
+                "controller": "did:cel:zW1mDyhheeVLHyuhSHa1myBVHUhGuoNP3gnqHy1J36cPiyj",
+                "publicKeyMultibase": "zDnaek5jEyLavyq5Gi5byrCwoY93p5Rwb8Cx6baiuXWcjGu56"
+              }
+            ],
+            "proof": {
+              "@context": [
+                "https://www.w3.org/ns/did/v1.1",
+                "https://w3id.org/security/data-integrity/v2"
+              ],
+              "type": "DataIntegrityProof",
+              "cryptosuite": "ecdsa-jcs-2019",
+              "created": "2025-11-07T01:09:09Z",
+              "proofPurpose": "assertionMethod",
+              "proofValue": "z2foMMVrek5oVNo1EGjDvsL871ACsGUNQqJrxrRXL5YydD2RH1i6N3uiwEZFywAV7uE3fzVrAU25XvsDjEM5GXYJ8"
+            }
+          }
+        }
+      },
+      "proof": [
+        {
+          "@context": [
+            "https://w3id.org/security/data-integrity/v2"
+          ],
+          "type": "DataIntegrityProof",
+          "cryptosuite": "ecdsa-jcs-2019",
+          "created": "2025-11-07T01:09:09Z",
+          "proofPurpose": "assertionMethod",
+          "proofValue": "z4E4L5krRtnoGZhAUWG1f3uFbRcoJP1QxbPm4e1ypY9cNSHGQbMTSHg916LrPAPuPhAeWiNMngXnZA2twHVsR1RRn",
+          "verificationMethod": "did:web:red-witness.example#vm-red-1"
+        },
+        {
+          "@context": [
+            "https://w3id.org/security/data-integrity/v2"
+          ],
+          "type": "DataIntegrityProof",
+          "cryptosuite": "ecdsa-jcs-2019",
+          "created": "2025-11-07T01:09:09Z",
+          "proofPurpose": "assertionMethod",
+          "proofValue": "z3WwvmsZg8CSMRCEqmj2jS7xohQFex8qyhtsL1iC7Kw6tUh4vWeySdDVFtu82kBYDSbZbon7Z6zmj4TSBnc9ZHst",
+          "verificationMethod": "did:web:green-witness.example#vm-green-1"
+        },
+        {
+          "@context": [
+            "https://w3id.org/security/data-integrity/v2"
+          ],
+          "type": "DataIntegrityProof",
+          "cryptosuite": "ecdsa-jcs-2019",
+          "created": "2025-11-07T01:09:09Z",
+          "proofPurpose": "assertionMethod",
+          "proofValue": "z2WH2NmyukSaXXjHrRkDc4W1WwKbEFUUmmbRYwrHKCkQyLFFqaiGuzhVjCgiSgyMc4LStjatWRZnpTyYJwL9AAsZP",
+          "verificationMethod": "did:web:blue-witness.example#vm-blue-1"
+        }
+      ]
+    }
+  ]
+}
+        </pre>
+
         <section class="normative">
           <h4>Document Creation Algorithm</h4>
 
@@ -246,6 +321,7 @@ The following section outlines the DID operations for the `did:cel` method.
         <p>
         </p>
 
+        </pre>
       </section>
 
       <section class="normative">
