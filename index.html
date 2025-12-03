@@ -443,7 +443,37 @@ Return a [=map=] containing:
         <h3>Witness</h3>
 
         <p>
+The witness operation provides independent cryptographic attestation for events
+in a Cryptographic Event Log, establishing temporal evidence and distributed
+validation of [=DID=] operations. After a [=DID document=] is modified, witness
+services—independent entities operating under their own authority—generate
+[=data integrity proofs=] over events in the log. Each witness returns a
+cryptographic proof that attests the event existed and was witnessed at a
+specific point in time.
+        </p>
 
+        <p>
+The witnessing process does not modify the event itself; rather, it produces a
+collection of cryptographic proofs that are attached to the event structure for
+subsequent verification. These witness attestations serve multiple purposes:
+they provide temporal anchoring by demonstrating when an event was witnessed,
+enable auditability through independent third-party validation, and increase
+resistance to tampering by distributing trust across multiple independent
+witnesses. Unlike centralized timestamp authorities, the witness architecture
+allows DID controllers to select witness services, preventing single points of
+failure while maintaining cryptographic verifiability of the entire event
+history.
+        </p>
+
+        <p class="issue" title="Witnesses create forking concerns">
+It may be that in addition to witnesses, DID controllers might need to commit
+to one or more systems that keep the latest cryptographic event log such that
+any attempts at forking would be detectable. Dishonest DID controllers, or
+attackers that have compromised a DID controller's cryptographic keys, might
+create divergent histories to gain an advantage over a system that relies on
+a particular DID. To prevent this attack, the DID controller would have to
+establish one or more systems that always have the latest DID Document to
+prevent forking attacks.
         </p>
 
         <pre class="example nohighlight" title="Cryptographic event log after witnessing">
