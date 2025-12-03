@@ -80,7 +80,10 @@
         maxTocLevel: 2,
         inlineCSS: true,
         postProcess: [],
-        xref: ["infra", "web-platform", "cid", "did", "vc-data-model"],
+        xref: [
+          "infra", "web-platform", "cid", "did", "vc-data-model",
+          "vc-data-integrity"
+        ],
         lint: {
           "informative-dfn": false
         },
@@ -245,7 +248,29 @@ The following section outlines the DID operations for the `did:cel` method.
         <h3>Create</h3>
 
         <p>
+The create operation establishes a new `did:cel` [=DID document=] with a
+self-certifying identifier derived from the document's cryptographic hash. This
+operation generates an initial cryptographic key pair, constructs a [=DID document=] containing
+the public key as an assertion method, and adds a [=data integrity proof=] to
+the document. This approach ensures that the [=DID=] is intrinsically
+bound to the document's initial state, providing strong integrity guarantees
+without requiring external registration.
+        </p>
 
+        <p>
+Once the [=DID document=] is created and signed, a Cryptographic Event Log (CEL) is
+initialized to track the complete history of operations on this DID. The log's
+first entry is a `create` event that contains the signed [=DID document=] as its
+data payload. This event serves as the cryptographic foundation for all
+subsequent updates, enabling verifiable audit trails and witness attestation.
+The combination of the self-certifying identifier, cryptographic proof, and
+event log creates a decentralized identifier implementation that requires no
+centralized authority for creation, validation, or resolution.
+        </p>
+
+        <p>
+An example of a cryptographic event log containing the creation event for a
+`did:cel` [=DID=] is shown below.
         </p>
 
         <pre class="example nohighlight" title="Cryptographic event log after did:cel creation">
