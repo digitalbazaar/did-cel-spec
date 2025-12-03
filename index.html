@@ -513,12 +513,69 @@ Return a [=map=] containing:
           <h4>Document Witnessing Algorithm</h4>
 
           <p>
+The following algorithm specifies how to generate witness attestations for the
+most recent event in a Cryptographic Event Log. Witnesses are independent
+entities that cryptographically sign events to provide decentralized validation
+and auditability. The algorithm takes a [=map=] |cel| as input, which is the
+Cryptographic Event Log containing one or more events. Output is an array of
+proof objects, one from each configured witness, or an error. Whenever this
+algorithm encodes strings, it MUST use UTF-8 encoding.
           </p>
 
           <ol class="algorithm">
             <li>
+Initialize an empty array |proofs| to collect witness attestations.
+            </li>
+            <li>
+Let |event| be the most recent event in |cel|.|log|. This is obtained by
+accessing the last event in the array.
+            </li>
+            <li>
+Let |witnesses| be an array of witness endpoint URLs that are trusted by the
+controller of the [=DID=].
+            </li>
+            <li>
+For each |witness| endpoint in |witnesses|, perform the following steps:
+              <ol class="algorithm">
+                <li>
+Canonicalize |event| using the JSON Canonicalization Scheme (JCS) as specified
+in [[RFC8785]]. Let |canonicalizedEvent| be the result.
+                </li>
+                <li>
+Compute the SHA3-256 <a data-cite="CID#Multihash">Multihash</a> of the
+UTF-8 encoded |canonicalizedEvent|. Let |hash| be the result.
+                </li>
+                <li>
+Encode |hash| using base58-btc encoding, prepending the
+<a data-cite="CID#Multibase">Multibase</a> (`z`) character to the encoding. Let
+|encodedHash| be the result.
+                </li>
+                <li>
+Send a witnessing request to the |witness| by performing an HTTP POST on the
+witness endpoint. The body of the POST is a JSON object containing a
+`digestMultibase` property with |encodedHash| as the associated value. Let
+|proof| be the result. If witnessing fails, an error MUST be raised and SHOULD
+convey an error type of `WITNESSING_ERROR`.
+                </li>
+                <li>
+Append |proof| to the |proofs| array.
+                </li>
+              </ol>
+            </li>
+            <li>
+Set |event|.`proof` to the |proofs| array containing attestations from all
+witnesses. Each proof in the array represents an independent cryptographic
+commitment by a witness that the event is valid and has been witnessed at a
+specific point in time.
             </li>
           </ol>
+
+          <p class="note">
+The witness operation does not modify the Cryptographic Event Log itself. The
+returned proofs are attached to the event in the log structure. Witnesses
+provide independent validation and temporal attestation, enabling auditability
+and resistance to single points of failure in the DID method infrastructure.
+          </p>
 
         </section>
 
