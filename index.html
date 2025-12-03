@@ -80,7 +80,7 @@
         maxTocLevel: 2,
         inlineCSS: true,
         postProcess: [],
-        xref: ["web-platform", "cid", "did", "vc-data-model"],
+        xref: ["infra", "web-platform", "cid", "did", "vc-data-model"],
         lint: {
           "informative-dfn": false
         },
@@ -103,6 +103,14 @@
       };
     </script>
     <style>
+code {
+  color: rgb(199, 73, 0);
+  font-weight: bold;
+}
+pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
 pre .highlight {
   font-weight: bold;
   color: Green;
@@ -123,13 +131,36 @@ pre .comment {
   -ms-user-select: none;
   user-select: none;
 }
-.color-text {
-  font-weight: bold;
-  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-}
 ol.algorithm { counter-reset:numsection; list-style-type: none; }
 ol.algorithm li { margin: 0.5em 0; }
 ol.algorithm li:before { font-weight: bold; counter-increment: numsection; content: counters(numsection, ".") ") "; }
+
+table.simple {
+    border-collapse: collapse;
+    margin: 25px 0;
+    min-width: 400px;
+    border: 1px solid #dddddd;
+}
+table.simple thead tr {
+    background-color: #005a9c;
+    color: #ffffff;
+    text-align: left;
+}
+table.simple th,
+table.simple td {
+    padding: 12px 15px;
+    vertical-align: top;
+    text-align: left;
+}
+table.simple tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+table.simple tbody tr:nth-of-type(even) {
+    background-color: #00000008;
+}
+table.simple tbody tr:last-of-type {
+    border-bottom: 2px solid #005a9c;
+}
     </style>
   </head>
   <body>
@@ -255,10 +286,127 @@ The following section outlines the DID operations for the `did:cel` method.
           <h4>Document Creation Algorithm</h4>
 
           <p>
+The following algorithm specifies how to create a new `did:cel` DID
+document with an initial verification method and establish a cryptographic event
+log. The algorithm takes an optional [=map=] |options| as input. The |options|
+map MAY contain a |keyType| property specifying an cryptographic key type to use
+(defaults to `P-256`). Output is a [=map=] containing the generated
+|didDocument|, the associated |keyPair|, and the initial
+|cryptographicEventLog|, or an error. Whenever this algorithm encodes strings,
+it MUST use UTF-8 encoding.
           </p>
 
           <ol class="algorithm">
             <li>
+Let |keyType| be set to |options|.|keyType| if present, otherwise set to
+`P-256`. The |keyType| value MUST be a valid keyType identifier
+supported by the <a data-cite="CID#Multikey">Multikey</a> specification.
+            </li>
+            <li>
+Generate a new key pair based on |keyType|. Let |keyPair| be the result. If key
+generation fails, an error MUST be raised and SHOULD convey an error type of
+`KEY_GENERATION_ERROR`.
+            </li>
+            <li>
+Export the public key from |keyPair| as a <a
+data-cite="CID#Multikey">Multikey</a> value. Let |publicKey| be the result.
+            </li>
+            <li>
+Create an initial DID document structure ([=map=] |didDocument|) with the
+following properties:
+              <ol class="algorithm">
+                <li>
+Set |didDocument|.`@context` to the string
+`"https://www.w3.org/ns/did/v1.1"`.
+                </li>
+                <li>
+Set |didDocument|.`assertionMethod` to an array containing a single
+verification method object with the following properties:
+                  <ol class="algorithm">
+                    <li>
+Set the verification method's `id` value to the concatenation of the
+`#` character and the `publicKeyMultibase` value of the |publicKey|.
+                    </li>
+                    <li>
+Set the verification method's `type` to `Multikey`.
+                    </li>
+                    <li>
+Set the verification method's `publicKeyMultibase` to
+|publicKey|.`publicKeyMultibase`.
+                    </li>
+                  </ol>
+                </li>
+              </ol>
+            </li>
+            <li>
+Generate the DID by hashing the canonicalized DID document:
+              <ol class="algorithm">
+                <li>
+Canonicalize |didDocument| using JSON Canonicalization Scheme (JCS) as specified
+in [[RFC8785]]. Let |canonicalizedDidDocument| be the result.
+                </li>
+                <li>
+Compute the SHA3-256 <a data-cite="CID#Multihash">Multihash</a> of the
+UTF-8 encoded canonicalized document. Let |hash| be the result.
+                </li>
+                <li>
+Encode |hash| using base58-btc encoding, prepending the
+<a data-cite="CID#Multibase">Multibase</a> (`z`) character to the encoding. Let
+|encodedHash| be the result.
+                </li>
+                <li>
+Set |didDocument|.`id` to the concatenated value of `did:cel:` and
+the |encodedHash|.
+                </li>
+                <li>
+Set the `controller` property of the verification method in
+|didDocument|.`assertionMethod` to |didDocument|.`id`.
+                </li>
+              </ol>
+            </li>
+            <li>
+Generate a cryptographic proof for |didDocument| using a cryptosuite
+that is compatible with the generated |keyPair|, such as
+<a data-cite="VC-DI-ECDSA#ecdsa-jcs-2019">ecdsa-jcs-2019</a>. Set the
+`proofPurpose` to `assertionMethod`. Add the `proof` to the |didDocument|.
+            </li>
+            <li>
+Create the initial cryptographic event log:
+              <ol class="algorithm">
+                <li>
+Create a new [=map=] |cryptographicEventLog| with a `log` property
+set to an array containing a single event object.
+                </li>
+                <li>
+The event object MUST contain an `event` property that is a [=map=]
+with an `operation` property.
+                </li>
+                <li>
+The `operation` [=map=] MUST contain:
+                  <ol class="algorithm">
+                    <li>
+A `type` property with the value `create`.
+                    </li>
+                    <li>
+A `data` property containing the complete |didDocument|.
+                    </li>
+                  </ol>
+                </li>
+              </ol>
+            </li>
+            <li>
+Return a [=map=] containing:
+              <ol class="algorithm">
+                <li>
+|didDocument|: the completed DID document with the computed identifier
+                </li>
+                <li>
+|keyPair|: the generated key pair (including secret key material)
+                </li>
+                <li>
+|cryptographicEventLog|: the initial event log with the create event
+                </li>
+              </ol>
             </li>
           </ol>
 
