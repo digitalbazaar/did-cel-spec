@@ -193,6 +193,62 @@ as expensive proof-of-work or proof-of-stake systems.
     <section class="informative">
       <h2>Introduction</h2>
 
+      <p>
+In today's digital world, your online identity is controlled by companies and
+organizations that maintain databases of usernames, passwords, and personal
+information. When you create an account with a service, that service owns your
+identity—they can lock you out, change the rules, or even shut down entirely,
+taking your identity and connections with it. The `did:cel` method offers a
+fundamentally different approach: it enables you to create and control your
+own digital identifier without relying on any single company, organization, or
+centralized database. Your [=DID=] belongs to you alone, stored and managed
+using cryptographic techniques that prove ownership without needing anyone's
+permission or approval.
+      </p>
+
+      <p>
+What makes `did:cel` truly decentralized is its witness-based architecture,
+which eliminates any single point of control or failure. Unlike traditional
+systems where a company's servers must be online for you to prove who you are,
+or blockchain-based systems where you depend on a specific network to function,
+`did:cel` distributes trust across multiple independent witnesses that attest
+to changes in your identity information. These witnesses don't control your
+identity—they simply provide timestamped confirmations that certain changes
+occurred. You choose which witnesses to use, and because no single witness has
+special authority, no one entity can block your access, censor your identity,
+or force unwanted changes. This architectural choice means your identity
+remains under your control even if individual witnesses become unavailable or
+act maliciously.
+      </p>
+
+      <p>
+This decentralization directly empowers individuals to own their identity and
+data online in meaningful ways. With `did:cel`, you can prove who you are and
+what credentials or permissions you hold without asking permission from
+gatekeepers. You can take your identity with you across different services and
+platforms, establishing trust relationships on your own terms. If a service you
+use shuts down or changes its policies in ways you disagree with, your
+underlying identity remains intact and under your control—you simply use it
+with a different service. This represents a fundamental shift from identity as
+something granted by institutions to identity as an inherent digital right that
+you exercise through cryptographic proofs. When you control your identifier,
+you control your digital presence, your relationships, and your data.
+      </p>
+
+      <p>
+This specification describes the complete technical framework for the `did:cel`
+method. The <a href="#did-cel-identifier-syntax">Identifier Syntax</a> section
+explains how [=DIDs=] are constructed using cryptographic hashes. The
+<a href="#operations">Operations</a> section details how to create, update,
+read, witness, and deactivate [=DID documents=], including the Cryptographic
+Event Log that maintains the complete history of changes. The
+<a href="#privacy-considerations">Privacy Considerations</a> section examines
+privacy implications of maintaining public event logs and offers mitigation
+strategies. Finally, the <a href="#security-considerations">Security
+Considerations</a> section addresses potential security risks and provides
+guidance for secure implementation and deployment of the `did:cel` method.
+      </p>
+
       <section id="conformance"></section>
 
     </section>
