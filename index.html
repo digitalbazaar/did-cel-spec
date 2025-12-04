@@ -175,9 +175,9 @@ controller of a DID to prove control over the identifier in a way that is
 independent of any centralized registry, identity provider, or certificate authority.
 These sorts of identifiers often utilize a heavy-weight registry, such as ones
 utilizing Decentralized Ledger Technologies (DLT), to create, read, update,
-and deactivate [=DIDs=]. This specification describes a witness-based [=DID
-Method=] where each DID Document's history is contained in a cryptographic
-event log where each event is witnessed by one or more trusted entities. The
+and deactivate [=DIDs=]. This specification describes a [=witness=]-based [=DID
+Method=] where each DID Document's history is contained in a [=cryptographic
+event log=] where each event is [=witnessed=] by one or more trusted entities. The
 approach avoids the need for complex decentralized consensus algorithms as well
 as expensive proof-of-work or proof-of-stake systems.
       </p>
@@ -207,17 +207,17 @@ permission or approval.
       </p>
 
       <p>
-What makes `did:cel` truly decentralized is its witness-based architecture,
+What makes `did:cel` truly decentralized is its [=witness=]-based architecture,
 which eliminates any single point of control or failure. Unlike traditional
 systems where a company's servers must be online for you to prove who you are,
 or blockchain-based systems where you depend on a specific network to function,
-`did:cel` distributes trust across multiple independent witnesses that attest
-to changes in your identity information. These witnesses don't control your
+`did:cel` distributes trust across multiple independent [=witnesses=] that attest
+to changes in your identity information. These [=witnesses=] don't control your
 identity—they simply provide timestamped confirmations that certain changes
-occurred. You choose which witnesses to use, and because no single witness has
+occurred. You choose which [=witnesses=] to use, and because no single [=witness=] has
 special authority, no one entity can block your access, censor your identity,
 or force unwanted changes. This architectural choice means your identity
-remains under your control even if individual witnesses become unavailable or
+remains under your control even if individual [=witnesses=] become unavailable or
 act maliciously.
       </p>
 
@@ -240,14 +240,64 @@ This specification describes the complete technical framework for the `did:cel`
 method. The <a href="#did-cel-identifier-syntax">Identifier Syntax</a> section
 explains how [=DIDs=] are constructed using cryptographic hashes. The
 <a href="#operations">Operations</a> section details how to create, update,
-read, witness, and deactivate [=DID documents=], including the Cryptographic
-Event Log that maintains the complete history of changes. The
+read, [=witness=], and deactivate [=DID documents=], including the [=cryptographic
+event log=] that maintains the complete history of changes. The
 <a href="#privacy-considerations">Privacy Considerations</a> section examines
 privacy implications of maintaining public event logs and offers mitigation
 strategies. Finally, the <a href="#security-considerations">Security
 Considerations</a> section addresses potential security risks and provides
 guidance for secure implementation and deployment of the `did:cel` method.
       </p>
+
+      <section>
+        <h3>Terminology</h3>
+
+        <p>
+Some terminology used throughout this document is defined in the
+<a data-cite="CID#terminology">Terminology</a> section of the [[[CID]]]
+specification, the
+<a data-cite="DID#terminology">Terminology</a> section of the [[[DID]]]
+specification, and the
+<a data-cite="VC-DATA-INTEGRITY#terminology">Terminology</a> section of the
+[[[VC-DATA-INTEGRITY]]] specification. This section defines additional terms
+used throughout this specification.
+        </p>
+
+        <dl class="termlist definitions" data-sort="ascending">
+
+          <dt><dfn class="export" data-lt="CEL">cryptographic event log</dfn></dt>
+          <dd>
+A [=hashlinked=] chain of events that records the complete history of operations
+performed on a document with each event cryptographically tied to the
+preceding event.
+          </dd>
+
+          <dt><dfn class="export" data-lt="hashlinked|hashlinking">hashlink</dfn></dt>
+          <dd>
+A mechanism of connecting data through cryptographic hashes such that an
+observer can cryptographically verify that the contents of the data that is
+pointed to has not been modified since the link was created.
+          </dd>
+
+          <dt><dfn class="export">self-certifying identifier</dfn></dt>
+          <dd>
+A type of identifier derived directly from the cryptographic hash of data. The
+approach creates an intrinsic binding between the identifier and its content
+without requiring external registration or validation.
+          </dd>
+
+          <dt><dfn class="export" data-lt="witnesses|witnessed|witnessing">witness</dfn></dt>
+          <dd>
+An independent entity that provides cryptographic attestation to data in a
+[=cryptographic event log=] by creating [=data integrity proofs=], enabling
+distributed validation without needing to store or control the data being
+attested to. Multiple <strong>witnesses</strong> can attest to the same data,
+and the process of creating such attestations is called
+<strong>witnessing</strong>.
+          </dd>
+
+        </dl>
+      </section>
 
       <section id="conformance"></section>
 
@@ -262,7 +312,7 @@ is simple. It consists of the `did:cel` prefix, followed by a <a
 data-cite="CID#Multibase">Multibase</a> base58-btc encoded value
 that is a concatenation of the <a data-cite="CID#Multihash">Multihash</a>
 identifier and the corresponding cryptographic digest for the initial
-cryptographic event log entry.
+[=cryptographic event log=] entry.
       </p>
 
       <p>
@@ -305,7 +355,7 @@ The following section outlines the DID operations for the `did:cel` method.
 
         <p>
 The create operation establishes a new `did:cel` [=DID document=] with a
-self-certifying identifier derived from the document's cryptographic hash. This
+[=self-certifying identifier=] derived from the document's cryptographic hash. This
 operation generates an initial cryptographic key pair, constructs a [=DID document=] containing
 the public key as an assertion method, and adds a [=data integrity proof=] to
 the document. This approach ensures that the [=DID=] is intrinsically
@@ -314,18 +364,18 @@ without requiring external registration.
         </p>
 
         <p>
-Once the [=DID document=] is created and signed, a Cryptographic Event Log (CEL) is
+Once the [=DID document=] is created and signed, a [=cryptographic event log=] (CEL) is
 initialized to track the complete history of operations on this DID. The log's
 first entry is a `create` event that contains the signed [=DID document=] as its
 data payload. This event serves as the cryptographic foundation for all
-subsequent updates, enabling verifiable audit trails and witness attestation.
-The combination of the self-certifying identifier, cryptographic proof, and
+subsequent updates, enabling verifiable audit trails and [=witness=] attestation.
+The combination of the [=self-certifying identifier=], cryptographic proof, and
 event log creates a decentralized identifier implementation that requires no
 centralized authority for creation, validation, or resolution.
         </p>
 
         <p>
-An example of a cryptographic event log containing the creation event for a
+An example of a [=cryptographic event log=] containing the creation event for a
 `did:cel` [=DID=] is shown below.
         </p>
 
@@ -452,7 +502,7 @@ that is compatible with the generated |keyPair|, such as
 `proofPurpose` to `assertionMethod`. Add the `proof` to the |didDocument|.
             </li>
             <li>
-Create the initial cryptographic event log:
+Create the initial [=cryptographic event log=]:
               <ol class="algorithm">
                 <li>
 Create a new [=map=] |cryptographicEventLog| with a `log` property
@@ -499,31 +549,31 @@ Return a [=map=] containing:
         <h3>Witness</h3>
 
         <p>
-The witness operation provides independent cryptographic attestation for events
-in a Cryptographic Event Log, establishing temporal evidence and distributed
-validation of [=DID=] operations. After a [=DID document=] is modified, witness
+The [=witness=] operation provides independent cryptographic attestation for events
+in a [=cryptographic event log=], establishing temporal evidence and distributed
+validation of [=DID=] operations. After a [=DID document=] is modified, [=witness=]
 services—independent entities operating under their own authority—generate
-[=data integrity proofs=] over events in the log. Each witness returns a
-cryptographic proof that attests the event existed and was witnessed at a
+[=data integrity proofs=] over events in the log. Each [=witness=] returns a
+cryptographic proof that attests the event existed and was [=witnessed=] at a
 specific point in time.
         </p>
 
         <p>
-The witnessing process does not modify the event itself; rather, it produces a
+The [=witnessing=] process does not modify the event itself; rather, it produces a
 collection of cryptographic proofs that are attached to the event structure for
-subsequent verification. These witness attestations serve multiple purposes:
-they provide temporal anchoring by demonstrating when an event was witnessed,
+subsequent verification. These [=witness=] attestations serve multiple purposes:
+they provide temporal anchoring by demonstrating when an event was [=witnessed=],
 enable auditability through independent third-party validation, and increase
 resistance to tampering by distributing trust across multiple independent
-witnesses. Unlike centralized timestamp authorities, the witness architecture
-allows [=DID controllers=] to select witness services, preventing single points of
+[=witnesses=]. Unlike centralized timestamp authorities, the [=witness=] architecture
+allows [=DID controllers=] to select [=witness=] services, preventing single points of
 failure while maintaining cryptographic verifiability of the entire event
 history.
         </p>
 
         <p class="issue" title="Witnesses create forking concerns">
-It may be that in addition to witnesses, [=DID controllers=] might need to commit
-to one or more systems that keep the latest cryptographic event log such that
+It may be that in addition to [=witnesses=], [=DID controllers=] might need to commit
+to one or more systems that keep the latest [=cryptographic event log=] such that
 any attempts at forking would be detectable. Dishonest [=DID controllers=], or
 attackers that have compromised a [=DID controller=]'s cryptographic keys, might
 create divergent histories to gain an advantage over a system that relies on
@@ -599,25 +649,25 @@ prevent forking attacks.
           <h4>Document Witnessing Algorithm</h4>
 
           <p>
-The following algorithm specifies how to generate witness attestations for the
-most recent event in a Cryptographic Event Log. Witnesses are independent
+The following algorithm specifies how to generate [=witness=] attestations for the
+most recent event in a [=cryptographic event log=]. [=Witnesses=] are independent
 entities that cryptographically sign events to provide decentralized validation
 and auditability. The algorithm takes a [=map=] |cel| as input, which is the
-Cryptographic Event Log containing one or more events. Output is an array of
-proof objects, one from each configured witness, or an error. Whenever this
+[=cryptographic event log=] containing one or more events. Output is an array of
+proof objects, one from each configured [=witness=], or an error. Whenever this
 algorithm encodes strings, it MUST use UTF-8 encoding.
           </p>
 
           <ol class="algorithm">
             <li>
-Initialize an empty array |proofs| to collect witness attestations.
+Initialize an empty array |proofs| to collect [=witness=] attestations.
             </li>
             <li>
 Let |event| be the most recent event in |cel|.|log|. This is obtained by
 accessing the last event in the array.
             </li>
             <li>
-Let |witnesses| be an array of witness endpoint URLs that are trusted by the
+Let |witnesses| be an array of [=witness=] endpoint URLs that are trusted by the
 controller of the [=DID=].
             </li>
             <li>
@@ -637,10 +687,10 @@ Encode |hash| using base58-btc encoding, prepending the
 |encodedHash| be the result.
                 </li>
                 <li>
-Send a witnessing request to the |witness| by performing an HTTP POST on the
-witness endpoint. The body of the POST is a JSON object containing a
+Send a [=witnessing=] request to the |witness| by performing an HTTP POST on the
+[=witness=] endpoint. The body of the POST is a JSON object containing a
 `digestMultibase` property with |encodedHash| as the associated value. Let
-|proof| be the result. If witnessing fails, an error MUST be raised and SHOULD
+|proof| be the result. If [=witnessing=] fails, an error MUST be raised and SHOULD
 convey an error type of `WITNESSING_ERROR`.
                 </li>
                 <li>
@@ -650,15 +700,15 @@ Append |proof| to the |proofs| array.
             </li>
             <li>
 Set |event|.`proof` to the |proofs| array containing attestations from all
-witnesses. Each proof in the array represents an independent cryptographic
-commitment by a witness that the event is valid and has been witnessed at a
+[=witnesses=]. Each proof in the array represents an independent cryptographic
+commitment by a [=witness=] that the event is valid and has been [=witnessed=] at a
 specific point in time.
             </li>
           </ol>
 
           <p class="note">
-The witness operation does not modify the Cryptographic Event Log itself. The
-returned proofs are attached to the event in the log structure. Witnesses
+The [=witness=] operation does not modify the [=cryptographic event log=] itself. The
+returned proofs are attached to the event in the log structure. [=Witnesses=]
 provide independent validation and temporal attestation, enabling auditability
 and resistance to single points of failure in the DID method infrastructure.
           </p>
@@ -756,33 +806,33 @@ and resistance to single points of failure in the DID method infrastructure.
 
         <p>
 The update operation enables modifications to an existing `did:cel` [=DID
-document=] while maintaining a verifiable audit trail through the Cryptographic
-Event Log. When changes are made to a [=DID document=]—such as adding or removing
+document=] while maintaining a verifiable audit trail through the [=cryptographic
+event log=]. When changes are made to a [=DID document=]—such as adding or removing
 verification methods, updating service endpoints, or setting expiration
 dates—the update operation ensures these modifications are cryptographically
 signed and recorded in the event log. The operation proceeds in two phases:
 first, the modified [=DID document=] receives a fresh [=data integrity proof=]
 signed by an authorized assertion method key; second, a new update event is
-appended to the Cryptographic Event Log with a hash link to the previous event,
+appended to the [=cryptographic event log=] with a hash link to the previous event,
 creating an immutable chain of document history.
         </p>
 
         <p>
-The hash-linking mechanism is central to the update operation's security
+The [=hashlinking=] mechanism is central to the update operation's security
 properties. Each update event includes a `previousEvent` property containing the
 SHA3-256 hash of the prior event. This cryptographic chain ensures that any
 tampering with historical events would be immediately detectable, as it would
 break the hash links throughout the chain. The combination of cryptographic
-proofs on the [=DID document=] and hash-linked events in the log provides both
+proofs on the [=DID document=] and [=hashlinked=] events in the log provides both
 authenticity guarantees (the document was signed by an authorized key) and
 integrity guarantees (the complete history of changes is verifiable and
 tamper-evident). After performing an update, implementations typically invoke
-the witness operation to obtain independent temporal attestations of the
+the [=witness=] operation to obtain independent temporal attestations of the
 modification.
         </p>
 
         <p>
-An example of an update operation serialized to a Cryptographic Event Log
+An example of an update operation serialized to a [=cryptographic event log=]
 is shown below:
         </p>
 
@@ -919,12 +969,12 @@ is shown below:
 
           <p>
 The following algorithm specifies how to update an existing `did:cel`
-[=DID document=] and record the change in the Cryptographic Event Log. The update
+[=DID document=] and record the change in the [=cryptographic event log=]. The update
 operation consists of two phases: regenerating the cryptographic proof on the
-modified [=DID document=], and appending a hash-linked update event to the log. The
+modified [=DID document=], and appending a [=hashlinked=] update event to the log. The
 algorithm takes a [=map=] |didDocument| (the modified [=DID document=]), a [=map=]
 |assertionMethod| (the key pair to use for signing), and a [=map=] |cel| (the
-existing Cryptographic Event Log) as input. Output is the updated |didDocument|
+existing [=cryptographic event log=]) as input. Output is the updated |didDocument|
 with a new proof and the updated |cel| with the new event appended, or an error.
 Whenever this algorithm encodes strings, it MUST use UTF-8 encoding.
           </p>
@@ -954,7 +1004,7 @@ Set |didDocument| to |newDidDocument|.
               </ol>
             </li>
             <li>
-Append the update event to the Cryptographic Event Log by performing the
+Append the update event to the [=cryptographic event log=] by performing the
 following steps:
               <ol class="algorithm">
                 <li>
@@ -991,7 +1041,7 @@ Set |updateEvent|.`event` to a new [=map=].
                     </li>
                     <li>
 Set |updateEvent|.`event`.`previousEvent` to |encodedHash|.
-This creates the hash-linked chain connecting this event to the previous event.
+This creates the [=hashlinked=] chain connecting this event to the previous event.
                     </li>
                     <li>
 Set |updateEvent|.`event`.`operation` to a new [=map=].
@@ -1012,28 +1062,28 @@ Append |updateEvent| to |cel|.`log`.
             </li>
             <li>
 Return the updated |didDocument| and updated |cel|. The |didDocument| now has
-a fresh cryptographic proof, and the |cel| contains a new hash-linked event
+a fresh cryptographic proof, and the |cel| contains a new [=hashlinked=] event
 recording the update operation.
             </li>
           </ol>
 
           <p class="note">
-The update operation maintains the integrity of the Cryptographic Event Log
-through hash-linking. Each update event includes a `previousEvent` property
+The update operation maintains the integrity of the [=cryptographic event log=]
+through [=hashlinking=]. Each update event includes a `previousEvent` property
 containing the hash of the prior event, creating a verifiable chain that
 prevents tampering and enables auditing of the [=DID document=]'s complete history.
-After updating, implementations invoke the witness operation to obtain
+After updating, implementations invoke the [=witness=] operation to obtain
 independent attestations of the update event.
           </p>
 
           <p class="issue" title="Sign operations, not DID documents?">
 The current algorithm has the controller sign the [=DID document=] to provide
 an assurance that the controller intended to make the modification to the
-[=DID document=]. The chain of events is witnessed, including all the hash-links
+[=DID document=]. The chain of events is [=witnessed=], including all the hashlinks
 back in history, to ensure that the order of events isn't reshuffled. In
 addition, it's presumed that registering storage requires the controller to
 perform the storage operation (another signature, but doesn't end up in the
-cryptographic log). This might result in a vulnerability. For example,
+[=cryptographic event log=]). This might result in a vulnerability. For example,
 an attacker might take a previously signed [=DID document=] and modifying
 the update operation to be a deactivation operation. In theory, registering
 this change would be prevented by the attacker not being able to sign the
@@ -1277,7 +1327,7 @@ of the [[[DID]]] specification, before reading this section.
         <h3>Public Event Log Visibility</h3>
 
         <p>
-The Cryptographic Event Log (CEL) for a DID is designed to be publicly
+The [=cryptographic event log=] ([=CEL=]) for a DID is designed to be publicly
 verifiable, which means that the complete history of [=DID document=] operations,
 including creation, updates, additions, and removals of verification methods
 and services, is permanently recorded and accessible. This transparency
@@ -1305,27 +1355,27 @@ particular [=DIDs=].
         <h3>Correlation via Witness Selection</h3>
 
         <p>
-The CEL architecture relies on witness services to provide attestations for
-DID operations. The specific set of witnesses chosen to attest to an event
-can serve as a correlatable fingerprint, especially if the witness
+The [=CEL=] architecture relies on [=witness=] services to provide attestations for
+DID operations. The specific set of [=witnesses=] chosen to attest to an event
+can serve as a correlatable fingerprint, especially if the [=witness=]
 configuration is unique or rarely used. If a DID consistently uses the same
-set of witnesses across multiple operations, or if the witness selection
+set of [=witnesses=] across multiple operations, or if the [=witness=] selection
 pattern is distinctive, observers might be able to correlate different [=DIDs=]
 or activities as belonging to the same entity or organization. This
-correlation risk increases when custom witness services are deployed or when
-non-standard witness configurations are used.
+correlation risk increases when custom [=witness=] services are deployed or when
+non-standard [=witness=] configurations are used.
         </p>
 
         <p>
 To reduce correlation risk, implementers might use commonly deployed and
-widely adopted witness services when privacy is a concern. Using the same
-witness configuration as other entities in the ecosystem provides herd
+widely adopted [=witness=] services when privacy is a concern. Using the same
+[=witness=] configuration as other entities in the ecosystem provides herd
 privacy by making it difficult to distinguish one [=DID controller=] from
-another based solely on witness selection. For higher privacy requirements,
-consider implementing witness rotation strategies where different witness
+another based solely on [=witness=] selection. For higher privacy requirements,
+consider implementing [=witness=] rotation strategies where different [=witness=]
 sets are used for different operations, though this might be balanced against
 the operational complexity and verification requirements. Standardizing
-witness selection policies across an ecosystem can also help establish common
+[=witness=] selection policies across an ecosystem can also help establish common
 configurations that enhance privacy through ubiquity.
         </p>
       </section>
@@ -1334,8 +1384,8 @@ configurations that enhance privacy through ubiquity.
         <h3>Temporal Metadata Leakage</h3>
 
         <p>
-Each event in the CEL includes temporal information, either explicitly
-through timestamps in witness proofs or implicitly through the sequence and
+Each event in the [=CEL=] includes temporal information, either explicitly
+through timestamps in [=witness=] proofs or implicitly through the sequence and
 timing of operations. This temporal metadata can reveal patterns about the
 DID controller's activities, operational hours, time zones, or response times
 to security incidents. For example, if verification methods are consistently
@@ -1353,7 +1403,7 @@ Automated systems might avoid predictable update schedules and instead use
 randomized timing within acceptable windows. For sensitive operations,
 consider batching updates and releasing them at randomized intervals to
 prevent timing correlation. Organizations might also be aware that even
-without explicit timestamps, the sequence of events and witness attestation
+without explicit timestamps, the sequence of events and [=witness=] attestation
 timing can leak temporal information, so careful consideration of when to
 perform DID operations is important for privacy-sensitive use cases.
         </p>
@@ -1363,9 +1413,9 @@ perform DID operations is important for privacy-sensitive use cases.
         <h3>Hash-Linked History Immutability</h3>
 
         <p>
-The hash-linking mechanism that chains events together in the CEL provides
+The [=hashlinking=] mechanism that chains events together in the [=CEL=] provides
 strong integrity guarantees but also creates an immutable, permanent record
-of all DID operations. Once an event is added to the log and witnessed, it
+of all DID operations. Once an event is added to the log and [=witnessed=], it
 cannot be removed or modified without breaking the cryptographic chain. This
 means that information about previous verification methods, services, or
 other metadata remains permanently visible in the log even after being
@@ -1394,12 +1444,12 @@ be included in [=DID documents=] to prevent privacy issues before they occur.
 
         <p>
 A DID identifier in the `did:cel` method is derived from or includes
-cryptographic material from the initial creation event, making it persistent
-and correlatable across all uses. Unlike some privacy-preserving identifier
-systems that allow for easy rotation or unlinkable presentations, a
-`did:cel` identifier remains constant and serves as a permanent correlation
-point. Any entity that observes the DID identifier in multiple contexts can
-definitively link those interactions as involving the same [=DID controller=].
+cryptographic material from the initial creation event, making it a persistent
+[=self-certifying identifier=] that is correlatable across all uses. Unlike some
+privacy-preserving identifier systems that allow for easy rotation or unlinkable
+presentations, a `did:cel` identifier remains constant and serves as a permanent
+correlation point. Any entity that observes the DID identifier in multiple contexts
+can definitively link those interactions as involving the same [=DID controller=].
 This persistence is valuable for establishing long-term identity and trust
 but directly conflicts with privacy goals that require unlinkability between
 different interactions or contexts.
@@ -1486,30 +1536,30 @@ being published in the public [=DID document=].
         <h3>Witness Service Metadata</h3>
 
         <p>
-When witness services attest to CEL events, they create proofs that include
-metadata such as their witness identifier, the cryptographic suite used, and
+When [=witness=] services attest to [=CEL=] events, they create proofs that include
+metadata such as their [=witness=] identifier, the cryptographic suite used, and
 potentially timing information. While this metadata is necessary for
 verification, it can also reveal information about the [=DID controller=]'s
-relationships with witness services, their witness selection strategy, and
+relationships with [=witness=] services, their [=witness=] selection strategy, and
 potentially their geographic location or operational preferences. If a DID
-consistently uses witnesses that are associated with specific geographic
+consistently uses [=witnesses=] that are associated with specific geographic
 regions, industries, or organizations, this association can reveal
 information about the [=DID controller=]. Additionally, the specific combination
-of witness services chosen might reveal business relationships or trust
+of [=witness=] services chosen might reveal business relationships or trust
 relationships that the [=DID controller=] has established.
         </p>
 
         <p>
-To mitigate privacy concerns related to witness metadata, implementers might
-select witness services that are widely used and geographically distributed
-to avoid revealing location information. When possible, use witness services
+To mitigate privacy concerns related to [=witness=] metadata, implementers might
+select [=witness=] services that are widely used and geographically distributed
+to avoid revealing location information. When possible, use [=witness=] services
 that are operated by neutral, well-known entities rather than
-industry-specific or organization-specific witnesses that might reveal
-affiliations. Consider implementing witness rotation policies that vary the
-set of witnesses used across different operations to prevent long-term
-correlation. Documentation might guide users on selecting witness services
+industry-specific or organization-specific [=witnesses=] that might reveal
+affiliations. Consider implementing [=witness=] rotation policies that vary the
+set of [=witnesses=] used across different operations to prevent long-term
+correlation. Documentation might guide users on selecting [=witness=] services
 that align with their privacy requirements, and ecosystems might encourage
-the deployment of diverse, broadly available witness services that can be
+the deployment of diverse, broadly available [=witness=] services that can be
 used interchangeably to enhance herd privacy.
         </p>
       </section>
@@ -1520,7 +1570,7 @@ used interchangeably to enhance herd privacy.
         <p>
 The cryptographic algorithms and key types chosen during DID creation and
 throughout the DID's lifecycle represent long-term commitments that are
-permanently recorded in the CEL. These cryptographic choices can reveal
+permanently recorded in the [=CEL=]. These cryptographic choices can reveal
 information about when the DID was created (based on algorithm popularity at
 that time), the security requirements or preferences of the [=DID controller=],
 and potentially the systems or software used to create the DID. As
@@ -1549,7 +1599,7 @@ configurations that are appropriate for different use cases.
         <h3>Resolution Privacy</h3>
 
         <p>
-Resolving a DID to obtain its current [=DID document=] and verify the CEL
+Resolving a DID to obtain its current [=DID document=] and verify the [=CEL=]
 requires accessing the log data, which might be stored in various locations
 such as distributed ledgers, decentralized storage systems, or centralized
 repositories. The act of resolving a DID can reveal information about the
@@ -1564,7 +1614,7 @@ further compromise privacy by revealing resolver identity or activities.
         <p>
 To enhance resolution privacy, implementers might use privacy-preserving
 resolution mechanisms such as proxies, VPNs, or onion routing when resolving
-DIDs. Aggressive caching of [=DID documents=] and CEL data reduces the frequency
+DIDs. Aggressive caching of [=DID documents=] and [=CEL=] data reduces the frequency
 of resolution requests and limits the metadata exposed to storage providers.
 Consider using decentralized resolution infrastructure that does not rely on
 single points that can monitor resolution patterns. Implement resolution
@@ -1596,29 +1646,29 @@ of the [[[DID]]] specification, before reading this section.
         <h3>Witness Collusion and Compromise</h3>
 
         <p>
-The security of the Cryptographic Event Log relies on witness services
+The security of the [=cryptographic event log=] relies on [=witness=] services
 providing independent attestations to [=DID document=] operations. If a
-sufficient number of witnesses collude or are compromised by an attacker,
+sufficient number of [=witnesses=] collude or are compromised by an attacker,
 they could attest to fraudulent events in the log, such as unauthorized
 modifications to a [=DID document=] or attempts to fork the event history.
-The impact of such an attack depends on how many witnesses are required for
-an event to be considered valid and how many witnesses an attacker can
-control. If witnesses are operated by a single entity or share common
+The impact of such an attack depends on how many [=witnesses=] are required for
+an event to be considered valid and how many [=witnesses=] an attacker can
+control. If [=witnesses=] are operated by a single entity or share common
 infrastructure, the risk of coordinated compromise increases significantly.
         </p>
 
         <p>
-To mitigate witness collusion risks, implementers are encouraged to select
-witnesses operated by independent entities with diverse operational and
+To mitigate [=witness=] collusion risks, implementers are encouraged to select
+[=witnesses=] operated by independent entities with diverse operational and
 jurisdictional characteristics. Systems that verify [=DIDs=] can require
-attestations from a minimum number of witnesses before accepting an event as
-valid, and can maintain lists of trusted witnesses with known good security
+attestations from a minimum number of [=witnesses=] before accepting an event as
+valid, and can maintain lists of trusted [=witnesses=] with known good security
 practices. [=DID controllers=] are encouraged to select geographically and
-organizationally distributed witnesses to minimize the risk of coordinated
-attacks. Monitoring witness behavior over time can help detect anomalies that
-might indicate compromise, such as witnesses consistently signing events that
-other witnesses reject. For critical applications, implementing witness
-rotation policies or requiring attestations from a larger pool of witnesses
+organizationally distributed [=witnesses=] to minimize the risk of coordinated
+attacks. Monitoring [=witness=] behavior over time can help detect anomalies that
+might indicate compromise, such as [=witnesses=] consistently signing events that
+other [=witnesses=] reject. For critical applications, implementing [=witness=]
+rotation policies or requiring attestations from a larger pool of [=witnesses=]
 can provide additional security margins.
         </p>
       </section>
@@ -1630,7 +1680,7 @@ can provide additional security margins.
 When a cryptographic key used in a [=DID document=] is compromised or needs
 to be rotated for operational reasons, the [=DID controller=] faces the
 challenge of updating the [=DID document=] while maintaining the integrity
-and verifiability of the Cryptographic Event Log. The key rotation process
+and verifiability of the [=cryptographic event log=]. The key rotation process
 itself requires signing operations using existing keys, but if those keys are
 compromised, an attacker might perform unauthorized rotations before the
 legitimate [=DID controller=] can act. Additionally, the immutable nature of
@@ -1663,8 +1713,8 @@ key compromises.
         <p>
 The `did:cel` method relies on SHA3-256 cryptographic hashing for multiple
 security-critical functions: generating [=DID=] identifiers from [=DID
-documents=], creating hash links between events in the Cryptographic Event
-Log, and ensuring the integrity of the event chain. If SHA3-256 were to
+documents=], creating hash links between events in the [=cryptographic event
+log=], and ensuring the integrity of the event chain. If SHA3-256 were to
 become vulnerable to collision attacks where two different inputs produce the
 same hash output, attackers could create fraudulent [=DID documents=] that
 resolve to the same [=DID=] identifier, forge event chain links to hide
@@ -1693,11 +1743,11 @@ decades given current cryptographic knowledge.
         <h3>Replay Attack Prevention</h3>
 
         <p>
-Events in the Cryptographic Event Log contain [=data integrity proofs=] and
-witness attestations that are valid cryptographic signatures. Without proper
+Events in the [=cryptographic event log=] contain [=data integrity proofs=] and
+[=witness=] attestations that are valid cryptographic signatures. Without proper
 safeguards, an attacker might capture a valid event from one [=DID=]'s log
 and attempt to replay it in a different context, such as in another [=DID=]'s
-log or at a different position in the same log. While the hash-linking
+log or at a different position in the same log. While the [=hashlinking=]
 mechanism provides some protection by binding events to specific positions in
 the chain, attackers might attempt to fork a log at an earlier point and
 replay captured events to create a fraudulent alternate history. The
@@ -1706,12 +1756,12 @@ valid even when presented out of their intended context.
         </p>
 
         <p>
-The hash-linking of events through the `previousEvent` property provides the
+The [=hashlinking=] of events through the `previousEvent` property provides the
 primary defense against replay attacks by binding each event to a specific
-position in the event chain. Implementations that verify Cryptographic Event
-Logs are advised to validate that each event's `previousEvent` hash correctly
+position in the event chain. Implementations that verify [=cryptographic event
+logs=] are advised to validate that each event's `previousEvent` hash correctly
 matches the hash of the preceding event, and that the chain is unbroken from
-the creation event to the most recent event. Witness proofs are encouraged to
+the creation event to the most recent event. [=Witness=] proofs are encouraged to
 include additional context-binding information such as the [=DID=] identifier
 being attested to, which prevents events from being replayed across different
 [=DIDs=]. For applications requiring stronger replay protection, events can
@@ -1727,15 +1777,15 @@ reject events that appear to rewind the log.
         <h3>Event Ordering and Forking</h3>
 
         <p>
-The Cryptographic Event Log creates a linear chain of events through
-hash-linking, but without additional coordination mechanisms, a [=DID
+The [=cryptographic event log=] creates a linear chain of events through
+[=hashlinking=], but without additional coordination mechanisms, a [=DID
 controller=] or an attacker with access to the [=DID controller=]'s keys
 could create multiple divergent chains (forks) from the same parent event.
 This could result in different observers seeing different versions of the
-[=DID document=] depending on which fork they have accessed. While witness
+[=DID document=] depending on which fork they have accessed. While [=witness=]
 services provide some protection by refusing to attest to events that fork
-from previously witnessed chains, a compromised or malicious [=DID
-controller=] might selectively present different forks to different witnesses
+from previously [=witnessed=] chains, a compromised or malicious [=DID
+controller=] might selectively present different forks to different [=witnesses=]
 or observers, creating confusion about the authoritative state of the [=DID
 document=].
         </p>
@@ -1743,17 +1793,17 @@ document=].
         <p>
 Detecting forks requires observers to compare event logs from multiple
 sources and identify cases where divergent chains exist for the same [=DID=].
-Witness services are encouraged to maintain persistent records of all events
+[=Witness=] services are encouraged to maintain persistent records of all events
 they have attested to and refuse to sign events that would create a fork from
-a previously witnessed chain. Implementations that resolve [=DIDs=] can query
+a previously [=witnessed=] chain. Implementations that resolve [=DIDs=] can query
 multiple independent sources for the event log and flag any cases where
 inconsistent histories are detected. For critical applications, [=DID
 controllers=] might publish commitments to their event log in external
 transparency logs or blockchain systems, making forks detectable by any
-observer. The witness-based architecture provides distributed verification,
-but ultimately relies on witnesses maintaining integrity and rejecting fork
-attempts. Clear policies about how witnesses handle fork detection, including
-whether they alert other witnesses or [=DID=] observers, can strengthen the
+observer. The [=witness=]-based architecture provides distributed verification,
+but ultimately relies on [=witnesses=] maintaining integrity and rejecting fork
+attempts. Clear policies about how [=witnesses=] handle fork detection, including
+whether they alert other [=witnesses=] or [=DID=] observers, can strengthen the
 overall security posture against forking attacks.
         </p>
       </section>
@@ -1762,13 +1812,13 @@ overall security posture against forking attacks.
         <h3>Proof Verification Requirements</h3>
 
         <p>
-Each event in a Cryptographic Event Log contains [=data integrity proofs=]
-on the [=DID document=] and potentially multiple witness proofs attesting to
+Each event in a [=cryptographic event log=] contains [=data integrity proofs=]
+on the [=DID document=] and potentially multiple [=witness=] proofs attesting to
 the event. Verifying the complete log requires checking every proof in every
 event from the creation event forward, which involves cryptographic signature
 verification operations, hash computations, and canonicalization of JSON-LD
 data structures. For [=DIDs=] with long histories containing many events and
-witness proofs, the computational cost of full verification can be
+[=witness=] proofs, the computational cost of full verification can be
 substantial, potentially leading to resource exhaustion or denial-of-service
 conditions when processing maliciously crafted logs with excessive events or
 complex proof structures.
@@ -1776,13 +1826,13 @@ complex proof structures.
 
         <p>
 Implementations are encouraged to set reasonable limits on the resources
-they will expend when verifying Cryptographic Event Logs, including maximum
+they will expend when verifying [=cryptographic event logs=], including maximum
 numbers of events to process, maximum verification time, and maximum memory
 usage. When possible, verification can be optimized by caching the results of
 verifying earlier portions of the log and only verifying new events since the
 last cached verification point. For applications that do not require complete
 historical verification, implementations might verify only the most recent
-events and rely on the witness attestations as evidence that earlier events
+events and rely on the [=witness=] attestations as evidence that earlier events
 were valid at the time they were created. Rate limiting the acceptance of
 [=DID=] resolution requests can prevent attackers from overwhelming systems
 with verification requests for complex [=DIDs=]. Clear documentation about
@@ -1796,34 +1846,34 @@ verification operations.
         <h3>Witness Availability and Reliability</h3>
 
         <p>
-The witness-based architecture of `did:cel` creates an operational dependency
-on witness services being available and responsive when [=DID controllers=]
-need to update their [=DID documents=]. If witnesses become unavailable due
+The [=witness=]-based architecture of `did:cel` creates an operational dependency
+on [=witness=] services being available and responsive when [=DID controllers=]
+need to update their [=DID documents=]. If [=witnesses=] become unavailable due
 to network outages, operational failures, or deliberate denial-of-service
 attacks, [=DID controllers=] might be unable to record new events in their
-Cryptographic Event Logs, effectively preventing them from making necessary
+[=cryptographic event logs=], effectively preventing them from making necessary
 updates such as key rotations in response to security incidents. This
 availability dependency could be exploited by attackers who compromise a
 [=DID controller=]'s keys and then launch denial-of-service attacks against
-witness services to prevent the legitimate controller from performing
+[=witness=] services to prevent the legitimate controller from performing
 emergency key rotations.
         </p>
 
         <p>
 [=DID controllers=] are encouraged to select multiple geographically and
-operationally distributed witnesses to reduce the risk of correlated
-failures. Systems can be designed to tolerate some witness unavailability by
-requiring only a subset of witnesses to attest to an event, though this
-reduces the security assurance provided by witness attestations.
-Implementing witness selection policies that automatically failover to
-alternative witnesses when primary witnesses are unavailable can maintain
+operationally distributed [=witnesses=] to reduce the risk of correlated
+failures. Systems can be designed to tolerate some [=witness=] unavailability by
+requiring only a subset of [=witnesses=] to attest to an event, though this
+reduces the security assurance provided by [=witness=] attestations.
+Implementing [=witness=] selection policies that automatically failover to
+alternative [=witnesses=] when primary [=witnesses=] are unavailable can maintain
 operational continuity during outages. For critical operations, [=DID
-controllers=] might pre-establish relationships with backup witness services
-that can be used if primary witnesses fail. Witness services are encouraged
+controllers=] might pre-establish relationships with backup [=witness=] services
+that can be used if primary [=witnesses=] fail. [=Witness=] services are encouraged
 to implement high-availability architectures with redundancy and failover
 capabilities to minimize downtime. Clear service level agreements and
-monitoring of witness availability helps [=DID controllers=] make informed
-decisions about which witnesses to rely on for their security requirements.
+monitoring of [=witness=] availability helps [=DID controllers=] make informed
+decisions about which [=witnesses=] to rely on for their security requirements.
         </p>
       </section>
 
@@ -1840,7 +1890,7 @@ cryptographic breakthroughs occur. [=DIDs=] created today might need to
 remain valid and verifiable for many years or decades, potentially outliving
 the security guarantees of the cryptographic algorithms they employ. As
 algorithms age, signatures and hashes created using those algorithms provide
-diminishing security, but the immutable nature of the Cryptographic Event Log
+diminishing security, but the immutable nature of the [=cryptographic event log=]
 means historical events cannot be re-signed with stronger algorithms.
         </p>
 
@@ -1854,7 +1904,7 @@ can provide continued security even if one algorithm is compromised,
 following the guidance in the Data Integrity specification. Systems that
 verify [=DIDs=] can maintain policies about which cryptographic algorithms
 are acceptable and reject [=DIDs=] using deprecated algorithms that no longer
-provide adequate security. For historical preservation, the witness
+provide adequate security. For historical preservation, the [=witness=]
 attestations in the log provide evidence that events were considered valid at
 the time they were created, even if the underlying cryptographic algorithms
 later become compromised. Clear documentation about the expected lifetime of
@@ -1867,30 +1917,30 @@ timelines.
         <h3>Timestamp Manipulation</h3>
 
         <p>
-Witness [=data integrity proofs=] might include timestamp information
-indicating when the witness attested to an event. While timestamps can be
+[=Witness=] [=data integrity proofs=] might include timestamp information
+indicating when the [=witness=] attested to an event. While timestamps can be
 useful for understanding the temporal sequence of events and detecting
-anomalies, they also introduce potential for manipulation if witnesses
+anomalies, they also introduce potential for manipulation if [=witnesses=]
 collude or if their clocks are inaccurate or maliciously adjusted. An
-attacker who compromises multiple witnesses might create backdated
+attacker who compromises multiple [=witnesses=] might create backdated
 attestations to make fraudulent events appear to have occurred earlier than
 they actually did, or forward-date attestations to hide the timing of
 malicious activities. Relying on timestamps for security-critical decisions
 can be problematic given the difficulty of ensuring accurate, tamper-proof
-time sources across distributed witness services.
+time sources across distributed [=witness=] services.
         </p>
 
         <p>
 Implementations are encouraged to use timestamps as informational indicators
 rather than security-critical values, and to corroborate timing information
-from multiple independent sources before relying on it. When witnesses
-include timestamps in their proofs, using multiple witnesses with independent
+from multiple independent sources before relying on it. When [=witnesses=]
+include timestamps in their proofs, using multiple [=witnesses=] with independent
 time sources can help detect significant clock discrepancies or manipulation
-attempts. Systems that detect large discrepancies in witness timestamps for
+attempts. Systems that detect large discrepancies in [=witness=] timestamps for
 the same event can flag those events for additional scrutiny. For
 applications requiring strong temporal guarantees, consider anchoring events
 to external time-stamping authorities or blockchain systems that provide
-verifiable proof of time. The hash-linked structure of the event log provides
+verifiable proof of time. The [=hashlinked=] structure of the event log provides
 a partial ordering guarantee—events must have occurred in the order they
 appear in the chain—which can be more reliable than timestamp values for
 determining relative event ordering. Clear documentation about the limitations
@@ -1903,7 +1953,7 @@ might be manipulated.
         <h3>Storage and Retrieval Security</h3>
 
         <p>
-Cryptographic Event Logs need to be stored and made available for [=DID=]
+[=cryptographic event logs=] need to be stored and made available for [=DID=]
 resolution, but the specification does not mandate a particular storage
 mechanism. Depending on the chosen storage approach—whether distributed
 ledgers, decentralized storage systems, centralized repositories, or peer-to-peer
@@ -1916,10 +1966,10 @@ usability of the [=DID=].
         </p>
 
         <p>
-[=DID controllers=] are encouraged to store their Cryptographic Event Logs in
+[=DID controllers=] are encouraged to store their [=cryptographic event logs=] in
 multiple independent locations to protect against data loss and ensure
 availability even if one storage location fails or is compromised. The
-hash-linked structure and witness proofs in the log provide integrity
+[=hashlinked=] structure and [=witness=] proofs in the log provide integrity
 protection, meaning that modifications to stored log data can be detected
 during verification, but this does not prevent deletion or denial of access.
 Using storage systems with built-in redundancy, access controls, and audit
@@ -1927,7 +1977,7 @@ logging can help protect log data from unauthorized modification or deletion.
 For public [=DIDs=], publishing logs to multiple publicly accessible
 repositories or content-addressed storage systems increases resilience and
 makes censorship more difficult. Implementations that retrieve logs are
-encouraged to verify the complete integrity of the log using the hash-linking
+encouraged to verify the complete integrity of the log using the [=hashlinking=]
 and proofs, rather than trusting that stored data is authentic. Backup
 strategies that maintain copies of logs in geographically and operationally
 diverse locations can ensure long-term preservation and availability.
@@ -1938,7 +1988,7 @@ diverse locations can ensure long-term preservation and availability.
         <h3>DID Document Proof Validation</h3>
 
         <p>
-Each [=DID document=] in the Cryptographic Event Log contains a [=data
+Each [=DID document=] in the [=cryptographic event log=] contains a [=data
 integrity proof=] that cryptographically binds the document to the [=DID
 controller=] through a signature created with a [=verification method=]
 contained in the document. Proper validation of these proofs is critical for
@@ -1972,26 +2022,26 @@ proof verification.
         <h3>Previous Event Hash Verification</h3>
 
         <p>
-The integrity of the Cryptographic Event Log depends on each event
+The integrity of the [=cryptographic event log=] depends on each event
 containing a correct hash of the previous event in the `previousEvent`
 property, creating an unbroken chain from the creation event to the most
 recent event. If implementations fail to properly verify that each
 `previousEvent` hash matches the actual hash of the preceding event, or if
 they skip hash verification entirely, attackers could insert fraudulent
 events, remove events from the middle of the chain, or create alternate
-histories without detection. This hash-linking is fundamental to the security
+histories without detection. This [=hashlinking=] is fundamental to the security
 model—without rigorous verification, the log provides no integrity guarantees.
         </p>
 
         <p>
-Implementations that verify Cryptographic Event Logs are advised to compute
+Implementations that verify [=cryptographic event logs=] are advised to compute
 the hash of each event using the same canonicalization and hashing algorithms
 specified in the creation and update algorithms, and verify that the computed
 hash matches the `previousEvent` value in the following event. Verification
 processes are encouraged to validate the complete chain from the creation
 event forward without skipping any events, as gaps in verification could hide
 inserted or modified events. The creation event, which has no previous event,
-represents a trust anchor and its authenticity can be verified through witness
+represents a trust anchor and its authenticity can be verified through [=witness=]
 attestations and the [=data integrity proof=] on the [=DID document=]. For
 performance reasons, implementations might cache verification results for
 earlier portions of the chain, but care is needed to ensure cached results are
@@ -2004,34 +2054,34 @@ when hash verification fails helps diagnose attacks or data corruption issues.
         <h3>Witness Proof Threshold Requirements</h3>
 
         <p>
-The `did:cel` specification includes witness attestations for events but does
-not mandate how many witness proofs are required for an event to be
+The `did:cel` specification includes [=witness=] attestations for events but does
+not mandate how many [=witness=] proofs are required for an event to be
 considered valid or trustworthy. Different applications and trust models
-might require different numbers of witnesses—some might accept events with a
-single witness attestation, while others might require unanimous agreement
-from multiple witnesses. If the threshold is set too low, attackers who
-compromise a small number of witnesses can attest to fraudulent events. If
-set too high, legitimate operations might be blocked by witness unavailability
+might require different numbers of [=witnesses=]—some might accept events with a
+single [=witness=] attestation, while others might require unanimous agreement
+from multiple [=witnesses=]. If the threshold is set too low, attackers who
+compromise a small number of [=witnesses=] can attest to fraudulent events. If
+set too high, legitimate operations might be blocked by [=witness=] unavailability
 or disagreement, creating denial-of-service conditions.
         </p>
 
         <p>
-Implementations are encouraged to establish clear policies about witness
+Implementations are encouraged to establish clear policies about [=witness=]
 proof requirements that balance security needs against operational
 flexibility. For high-security applications, requiring attestations from a
-majority or supermajority of a defined witness set provides protection
-against individual witness compromises. Lower-security applications might
+majority or supermajority of a defined [=witness=] set provides protection
+against individual [=witness=] compromises. Lower-security applications might
 accept events with fewer attestations but implement monitoring to detect
 suspicious patterns. Policies can be adaptive, such as requiring more
-witnesses for security-critical operations like key rotations while accepting
-fewer witnesses for routine updates. When witnesses disagree about an event's
+[=witnesses=] for security-critical operations like key rotations while accepting
+fewer [=witnesses=] for routine updates. When [=witnesses=] disagree about an event's
 validity, implementations are encouraged to investigate the discrepancy rather
 than automatically accepting or rejecting the event. Clear documentation
-about witness requirements helps [=DID controllers=] understand what level of
-witness consensus they need to achieve for their operations to be accepted by
-verifiers. Witness selection strategies that include witnesses with diverse
+about [=witness=] requirements helps [=DID controllers=] understand what level of
+[=witness=] consensus they need to achieve for their operations to be accepted by
+verifiers. [=Witness=] selection strategies that include [=witnesses=] with diverse
 operational and governance models can provide more robust validation than
-witnesses operated by related entities.
+[=witnesses=] operated by related entities.
         </p>
       </section>
 
@@ -2048,7 +2098,7 @@ document=] that appear legitimate because they carry valid [=data integrity
 proofs=]. Such unauthorized modifications might add attacker-controlled
 [=verification methods=], remove legitimate verification methods, change
 service endpoints, or modify other [=DID document=] properties, all while
-appearing to be authorized changes in the Cryptographic Event Log.
+appearing to be authorized changes in the [=cryptographic event log=].
         </p>
 
         <p>
