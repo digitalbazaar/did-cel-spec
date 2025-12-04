@@ -175,7 +175,7 @@ decentralized digital identity. These identifiers are designed to enable the
 independent of any centralized registry, identity provider, or certificate authority.
 These sorts of identifiers often utilize a heavy-weight registry, such as ones
 utilizing Decentralized Ledger Technologies (DLT), to create, read, update,
-and deactivate DIDs. This specification describes a witness-based [=DID
+and deactivate [=DIDs=]. This specification describes a witness-based [=DID
 Method=] where each DID Document's history is contained in a cryptographic
 event log where each event is witnessed by one or more trusted entities. The
 approach avoids the need for complex decentralized consensus algorithms as well
@@ -460,18 +460,18 @@ they provide temporal anchoring by demonstrating when an event was witnessed,
 enable auditability through independent third-party validation, and increase
 resistance to tampering by distributing trust across multiple independent
 witnesses. Unlike centralized timestamp authorities, the witness architecture
-allows DID controllers to select witness services, preventing single points of
+allows [=DID controllers=] to select witness services, preventing single points of
 failure while maintaining cryptographic verifiability of the entire event
 history.
         </p>
 
         <p class="issue" title="Witnesses create forking concerns">
-It may be that in addition to witnesses, DID controllers might need to commit
+It may be that in addition to witnesses, [=DID controllers=] might need to commit
 to one or more systems that keep the latest cryptographic event log such that
-any attempts at forking would be detectable. Dishonest DID controllers, or
-attackers that have compromised a DID controller's cryptographic keys, might
+any attempts at forking would be detectable. Dishonest [=DID controllers=], or
+attackers that have compromised a [=DID controller=]'s cryptographic keys, might
 create divergent histories to gain an advantage over a system that relies on
-a particular DID. To prevent this attack, the DID controller would have to
+a particular DID. To prevent this attack, the [=DID controller=] would have to
 establish one or more systems that always have the latest [=DID document=] to
 prevent forking attacks.
         </p>
@@ -701,11 +701,11 @@ and resistance to single points of failure in the DID method infrastructure.
         <p>
 The update operation enables modifications to an existing `did:cel` [=DID
 document=] while maintaining a verifiable audit trail through the Cryptographic
-Event Log. When changes are made to a DID document—such as adding or removing
+Event Log. When changes are made to a [=DID document=]—such as adding or removing
 verification methods, updating service endpoints, or setting expiration
 dates—the update operation ensures these modifications are cryptographically
 signed and recorded in the event log. The operation proceeds in two phases:
-first, the modified DID document receives a fresh [=data integrity proof=]
+first, the modified [=DID document=] receives a fresh [=data integrity proof=]
 signed by an authorized assertion method key; second, a new update event is
 appended to the Cryptographic Event Log with a hash link to the previous event,
 creating an immutable chain of document history.
@@ -717,7 +717,7 @@ properties. Each update event includes a `previousEvent` property containing the
 SHA3-256 hash of the prior event. This cryptographic chain ensures that any
 tampering with historical events would be immediately detectable, as it would
 break the hash links throughout the chain. The combination of cryptographic
-proofs on the DID document and hash-linked events in the log provides both
+proofs on the [=DID document=] and hash-linked events in the log provides both
 authenticity guarantees (the document was signed by an authorized key) and
 integrity guarantees (the complete history of changes is verifiable and
 tamper-evident). After performing an update, implementations typically invoke
@@ -983,7 +983,7 @@ the update operation to be a deactivation operation. In theory, registering
 this change would be prevented by the attacker not being able to sign the
 registration call (unless there was a vulnerability with the registration
 mechanism). This seems brittle, and in order to avoid the brittleness, we
-might just want the DID controller to sign the entire operation instead of
+might just want the [=DID controller=] to sign the entire operation instead of
 only signing the [=DID document=].
           </p>
 
@@ -1216,6 +1216,310 @@ of the [[[CID]]] specification, as well as the
 <a data-cite="?DID#privacy-considerations">Privacy Considerations</a> section
 of the [[[DID]]] specification, before reading this section.
       </p>
+
+      <section>
+        <h3>Public Event Log Visibility</h3>
+
+        <p>
+The Cryptographic Event Log (CEL) for a DID is designed to be publicly
+verifiable, which means that the complete history of [=DID document=] operations,
+including creation, updates, additions, and removals of verification methods
+and services, is permanently recorded and accessible. This transparency
+enables auditability and trust but comes at the cost of revealing temporal
+patterns and the evolution of a DID's capabilities over time. Observers can
+analyze the log to determine when verification methods were added or expired,
+when services were introduced or removed, and how frequently the [=DID document=]
+has been modified.
+        </p>
+
+        <p>
+To mitigate this privacy concern, implementers might carefully consider what
+information is included in [=DID documents=] and when updates are performed.
+Batch multiple related changes into a single update operation when possible
+to reduce the granularity of information exposed through temporal analysis.
+For use cases requiring higher privacy, consider using ephemeral [=DIDs=] that
+are rotated regularly, or employing [=DIDs=] with shorter retention periods for
+their event logs. Organizations might also document their DID rotation and
+update policies to help users understand the privacy implications of using
+particular [=DIDs=].
+        </p>
+      </section>
+
+      <section>
+        <h3>Correlation via Witness Selection</h3>
+
+        <p>
+The CEL architecture relies on witness services to provide attestations for
+DID operations. The specific set of witnesses chosen to attest to an event
+can serve as a correlatable fingerprint, especially if the witness
+configuration is unique or rarely used. If a DID consistently uses the same
+set of witnesses across multiple operations, or if the witness selection
+pattern is distinctive, observers might be able to correlate different [=DIDs=]
+or activities as belonging to the same entity or organization. This
+correlation risk increases when custom witness services are deployed or when
+non-standard witness configurations are used.
+        </p>
+
+        <p>
+To reduce correlation risk, implementers might use commonly deployed and
+widely adopted witness services when privacy is a concern. Using the same
+witness configuration as other entities in the ecosystem provides herd
+privacy by making it difficult to distinguish one [=DID controller=] from
+another based solely on witness selection. For higher privacy requirements,
+consider implementing witness rotation strategies where different witness
+sets are used for different operations, though this might be balanced against
+the operational complexity and verification requirements. Standardizing
+witness selection policies across an ecosystem can also help establish common
+configurations that enhance privacy through ubiquity.
+        </p>
+      </section>
+
+      <section>
+        <h3>Temporal Metadata Leakage</h3>
+
+        <p>
+Each event in the CEL includes temporal information, either explicitly
+through timestamps in witness proofs or implicitly through the sequence and
+timing of operations. This temporal metadata can reveal patterns about the
+DID controller's activities, operational hours, time zones, or response times
+to security incidents. For example, if verification methods are consistently
+updated during specific hours, this might reveal information about the
+organization's business hours or geographic location. Rapid succession of
+updates might indicate automated processes or security incidents, while long
+periods of inactivity followed by bursts of activity can reveal operational
+patterns.
+        </p>
+
+        <p>
+Implementers can mitigate temporal metadata leakage by implementing delays or
+jitter in update operations to obscure the precise timing of changes.
+Automated systems might avoid predictable update schedules and instead use
+randomized timing within acceptable windows. For sensitive operations,
+consider batching updates and releasing them at randomized intervals to
+prevent timing correlation. Organizations might also be aware that even
+without explicit timestamps, the sequence of events and witness attestation
+timing can leak temporal information, so careful consideration of when to
+perform DID operations is important for privacy-sensitive use cases.
+        </p>
+      </section>
+
+      <section>
+        <h3>Hash-Linked History Immutability</h3>
+
+        <p>
+The hash-linking mechanism that chains events together in the CEL provides
+strong integrity guarantees but also creates an immutable, permanent record
+of all DID operations. Once an event is added to the log and witnessed, it
+cannot be removed or modified without breaking the cryptographic chain. This
+means that information about previous verification methods, services, or
+other metadata remains permanently visible in the log even after being
+removed from the current [=DID document=]. This immutability can be problematic
+for privacy if sensitive information was inadvertently included in earlier
+versions of the [=DID document=], or if the history of changes itself reveals
+sensitive information about the [=DID controller=]'s activities or relationships.
+        </p>
+
+        <p>
+To address the immutability concern, implementers might exercise caution
+when including information in [=DID documents=], as any data added will become
+part of the permanent record. Before performing operations, carefully review
+the information being added to ensure it does not contain sensitive data that
+needs to remain private. For cases where the historical record becomes
+problematic, [=DID controllers=] can deactivate the current DID and create a new
+one, though this breaks continuity and requires updating all systems that
+reference the old DID. Alternatively, implement clear documentation and
+guidelines for [=DID controllers=] about what information might and might not
+be included in [=DID documents=] to prevent privacy issues before they occur.
+        </p>
+      </section>
+
+      <section>
+        <h3>DID Identifier Persistence</h3>
+
+        <p>
+A DID identifier in the `did:cel` method is derived from or includes
+cryptographic material from the initial creation event, making it persistent
+and correlatable across all uses. Unlike some privacy-preserving identifier
+systems that allow for easy rotation or unlinkable presentations, a
+`did:cel` identifier remains constant and serves as a permanent correlation
+point. Any entity that observes the DID identifier in multiple contexts can
+definitively link those interactions as involving the same [=DID controller=].
+This persistence is valuable for establishing long-term identity and trust
+but directly conflicts with privacy goals that require unlinkability between
+different interactions or contexts.
+        </p>
+
+        <p>
+For scenarios requiring unlinkability, implementers might not reuse the same
+DID across different contexts or relationships. Instead, create separate [=DIDs=]
+for different purposes, relationships, or contexts where correlation might
+be prevented. Implement DID management practices that include regular
+rotation of [=DIDs=] when appropriate, and clearly document which [=DIDs=] are used
+for which purposes. Organizations might also provide tooling to help users
+manage multiple [=DIDs=] and understand the privacy implications of DID reuse.
+For use cases where both persistence and privacy are required, consider
+layering additional privacy-preserving mechanisms on top of the DID
+infrastructure, such as using [=verifiable credentials=] with unlinkable
+presentation features.
+        </p>
+      </section>
+
+      <section>
+        <h3>Verification Method Enumeration</h3>
+
+        <p>
+DID documents contain verification methods that specify the cryptographic
+keys and their purposes (authentication, assertion, key agreement, etc.). The
+complete set of verification methods, their types, cryptographic algorithms,
+and relationship assignments can serve as a unique fingerprint for a DID,
+especially when non-standard cryptographic suites are used or when the
+combination of verification methods is unusual. Even when using common
+cryptographic suites, the specific number and configuration of verification
+methods for different purposes can reveal information about the DID
+controller's intended use cases, security posture, or organizational
+structure.
+        </p>
+
+        <p>
+To reduce the identifiability of [=DIDs=] through verification method
+enumeration, implementers might favor standard, commonly used verification
+method configurations that are widely deployed in the ecosystem. Avoid
+creating unique or unusual combinations of verification methods unless
+specifically required. When possible, use the minimum number of verification
+methods necessary for the intended functionality to reduce the uniqueness of
+the configuration. For organizations deploying multiple [=DIDs=], consider
+standardizing on common verification method templates that are used across
+many [=DIDs=] to prevent fingerprinting. Documentation might also guide users on
+recommended verification method configurations that balance functionality
+with privacy considerations.
+        </p>
+      </section>
+
+      <section>
+        <h3>Service Endpoint Disclosure</h3>
+
+        <p>
+DID documents can include service endpoints that specify how to interact with
+services related to the [=DID controller=]. These service endpoints often contain
+URLs or other network identifiers that reveal information about the DID
+controller's infrastructure, service providers, or operational environment.
+Service endpoints might point to specific servers, domains, or third-party
+services, which can be used to correlate [=DIDs=], identify the organizations or
+individuals behind them, or map out relationships between different entities.
+Even when service endpoints use common infrastructure, the specific
+combination or configuration of services can serve as a identifying
+characteristic.
+        </p>
+
+        <p>
+Implementers might carefully consider whether service endpoints need to be
+included in the [=DID document=] itself, or whether they could be communicated
+through other channels that provide better privacy properties. When service
+endpoints might be included, use generic or shared infrastructure that does
+not reveal specific information about the [=DID controller=]. Consider using
+privacy-preserving relay services, proxy servers, or shared service
+infrastructure that is used by multiple entities to prevent correlation.
+Avoid including service endpoints that point to unique or rarely used
+domains. For higher privacy scenarios, service endpoint information might be
+exchanged out-of-band or through encrypted communication channels rather than
+being published in the public [=DID document=].
+        </p>
+      </section>
+
+      <section>
+        <h3>Witness Service Metadata</h3>
+
+        <p>
+When witness services attest to CEL events, they create proofs that include
+metadata such as their witness identifier, the cryptographic suite used, and
+potentially timing information. While this metadata is necessary for
+verification, it can also reveal information about the [=DID controller=]'s
+relationships with witness services, their witness selection strategy, and
+potentially their geographic location or operational preferences. If a DID
+consistently uses witnesses that are associated with specific geographic
+regions, industries, or organizations, this association can reveal
+information about the [=DID controller=]. Additionally, the specific combination
+of witness services chosen might reveal business relationships or trust
+relationships that the [=DID controller=] has established.
+        </p>
+
+        <p>
+To mitigate privacy concerns related to witness metadata, implementers might
+select witness services that are widely used and geographically distributed
+to avoid revealing location information. When possible, use witness services
+that are operated by neutral, well-known entities rather than
+industry-specific or organization-specific witnesses that might reveal
+affiliations. Consider implementing witness rotation policies that vary the
+set of witnesses used across different operations to prevent long-term
+correlation. Documentation might guide users on selecting witness services
+that align with their privacy requirements, and ecosystems might encourage
+the deployment of diverse, broadly available witness services that can be
+used interchangeably to enhance herd privacy.
+        </p>
+      </section>
+
+      <section>
+        <h3>Long-term Cryptographic Commitment</h3>
+
+        <p>
+The cryptographic algorithms and key types chosen during DID creation and
+throughout the DID's lifecycle represent long-term commitments that are
+permanently recorded in the CEL. These cryptographic choices can reveal
+information about when the DID was created (based on algorithm popularity at
+that time), the security requirements or preferences of the [=DID controller=],
+and potentially the systems or software used to create the DID. As
+cryptographic algorithms age and new algorithms are adopted, the continued
+use of older algorithms or the early adoption of newer ones can serve as
+identifying characteristics. Furthermore, the cryptographic choices reveal
+the [=DID controller=]'s security posture and risk tolerance.
+        </p>
+
+        <p>
+Implementers might provide clear guidance on recommended cryptographic
+algorithms that balance security requirements with privacy considerations.
+Using widely adopted, current best-practice cryptographic algorithms helps
+provide herd privacy by ensuring that many [=DIDs=] share similar cryptographic
+profiles. Organizations might plan for cryptographic agility by supporting
+algorithm migration paths that allow updating to newer algorithms without
+requiring DID replacement. When upgrading cryptographic algorithms,
+coordinate with broader ecosystem adoption to avoid standing out as an early
+or late adopter. Documentation might explain the privacy implications of
+different cryptographic choices and provide recommendations for standard
+configurations that are appropriate for different use cases.
+        </p>
+      </section>
+
+      <section>
+        <h3>Resolution Privacy</h3>
+
+        <p>
+Resolving a DID to obtain its current [=DID document=] and verify the CEL
+requires accessing the log data, which might be stored in various locations
+such as distributed ledgers, decentralized storage systems, or centralized
+repositories. The act of resolving a DID can reveal information about the
+resolver's interest in that particular DID to the entities operating the
+storage or retrieval infrastructure. This creates potential for surveillance,
+tracking of resolution patterns, or profiling of which [=DIDs=] are being
+resolved by which entities. Network-level metadata such as IP addresses,
+timing of resolution requests, and patterns of correlated resolutions can
+further compromise privacy by revealing resolver identity or activities.
+        </p>
+
+        <p>
+To enhance resolution privacy, implementers might use privacy-preserving
+resolution mechanisms such as proxies, VPNs, or onion routing when resolving
+DIDs. Aggressive caching of [=DID documents=] and CEL data reduces the frequency
+of resolution requests and limits the metadata exposed to storage providers.
+Consider using decentralized resolution infrastructure that does not rely on
+single points that can monitor resolution patterns. Implement resolution
+protocols that minimize metadata leakage, such as fetching data through
+encrypted channels or using obfuscation techniques that prevent correlation
+of multiple resolution requests. For high-privacy scenarios, design systems
+that pre-fetch or batch resolve multiple [=DIDs=] to obscure which specific [=DIDs=]
+are of interest, and utilize privacy-preserving query protocols where
+available.
+        </p>
+      </section>
 
     </section>
 
