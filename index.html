@@ -231,7 +231,7 @@ did-cel-identifier := did:cel:MULTIBASE(base58-btc, MULTICODEC(sha3-256, JCS(ini
 A simple example of a valid `did:cel` DID is:
       </p>
 
-      <pre class="example" title="A valid did:cel identifier">
+      <pre class="example nohighlight" title="A valid did:cel identifier">
 did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE
       </pre>
 
@@ -337,7 +337,7 @@ Export the public key from |keyPair| as a <a
 data-cite="CID#Multikey">Multikey</a> value. Let |publicKey| be the result.
             </li>
             <li>
-Create an initial DID document structure ([=map=] |didDocument|) with the
+Create an initial [=DID document=] structure ([=map=] |didDocument|) with the
 following properties:
               <ol class="algorithm">
                 <li>
@@ -364,7 +364,7 @@ Set the verification method's `publicKeyMultibase` to
               </ol>
             </li>
             <li>
-Generate the DID by hashing the canonicalized DID document:
+Generate the [=DID=]by hashing the canonicalized [=DID document=]:
               <ol class="algorithm">
                 <li>
 Canonicalize |didDocument| using JSON Canonicalization Scheme (JCS) as specified
@@ -423,7 +423,7 @@ A `data` property containing the complete |didDocument|.
 Return a [=map=] containing:
               <ol class="algorithm">
                 <li>
-|didDocument|: the completed DID document with the computed identifier
+|didDocument|: the completed [=DID document=] with the computed identifier
                 </li>
                 <li>
 |keyPair|: the generated key pair (including secret key material)
@@ -472,7 +472,7 @@ any attempts at forking would be detectable. Dishonest DID controllers, or
 attackers that have compromised a DID controller's cryptographic keys, might
 create divergent histories to gain an advantage over a system that relies on
 a particular DID. To prevent this attack, the DID controller would have to
-establish one or more systems that always have the latest DID Document to
+establish one or more systems that always have the latest [=DID document=] to
 prevent forking attacks.
         </p>
 
@@ -699,6 +699,35 @@ and resistance to single points of failure in the DID method infrastructure.
         <h3>Update</h3>
 
         <p>
+The update operation enables modifications to an existing `did:cel` [=DID
+document=] while maintaining a verifiable audit trail through the Cryptographic
+Event Log. When changes are made to a DID document—such as adding or removing
+verification methods, updating service endpoints, or setting expiration
+dates—the update operation ensures these modifications are cryptographically
+signed and recorded in the event log. The operation proceeds in two phases:
+first, the modified DID document receives a fresh [=data integrity proof=]
+signed by an authorized assertion method key; second, a new update event is
+appended to the Cryptographic Event Log with a hash link to the previous event,
+creating an immutable chain of document history.
+        </p>
+
+        <p>
+The hash-linking mechanism is central to the update operation's security
+properties. Each update event includes a `previousEvent` property containing the
+SHA3-256 hash of the prior event. This cryptographic chain ensures that any
+tampering with historical events would be immediately detectable, as it would
+break the hash links throughout the chain. The combination of cryptographic
+proofs on the DID document and hash-linked events in the log provides both
+authenticity guarantees (the document was signed by an authorized key) and
+integrity guarantees (the complete history of changes is verifiable and
+tamper-evident). After performing an update, implementations typically invoke
+the witness operation to obtain independent temporal attestations of the
+modification.
+        </p>
+
+        <p>
+An example of an update operation serialized to a Cryptographic Event Log
+is shown below:
         </p>
 
         <pre class="example nohighlight" title="Cryptographic event log after did:cel update">
@@ -833,12 +862,130 @@ and resistance to single points of failure in the DID method infrastructure.
           <h4>Document Update Algorithm</h4>
 
           <p>
+The following algorithm specifies how to update an existing `did:cel`
+[=DID document=] and record the change in the Cryptographic Event Log. The update
+operation consists of two phases: regenerating the cryptographic proof on the
+modified [=DID document=], and appending a hash-linked update event to the log. The
+algorithm takes a [=map=] |didDocument| (the modified [=DID document=]), a [=map=]
+|assertionMethod| (the key pair to use for signing), and a [=map=] |cel| (the
+existing Cryptographic Event Log) as input. Output is the updated |didDocument|
+with a new proof and the updated |cel| with the new event appended, or an error.
+Whenever this algorithm encodes strings, it MUST use UTF-8 encoding.
           </p>
 
           <ol class="algorithm">
             <li>
+Update the proof on the [=DID Document=] by performing the following steps:
+              <ol class="algorithm">
+                <li>
+Let |newDidDocument| be a copy of |didDocument|.
+                </li>
+                <li>
+If |newDidDocument| contains a `proof` property, remove it. Any
+existing proof will be replaced with a new proof reflecting the current state
+of the document.
+                </li>
+                <li>
+Create a [=data integrity proof=] with the cryptosuite and a signer derived from
+|assertionMethod|. Let |proof| be the result of this step.
+                </li>
+                <li>
+Set |newDidDocument|.`proof` to |proof|.
+                </li>
+                <li>
+Set |didDocument| to |newDidDocument|.
+                </li>
+              </ol>
+            </li>
+            <li>
+Append the update event to the Cryptographic Event Log by performing the
+following steps:
+              <ol class="algorithm">
+                <li>
+If |cel|.`log` does not contain any events, an error MUST be raised and
+SHOULD convey an error type of `MALFORMED_CEL_ERROR`.
+                </li>
+                <li>
+Perform the following steps to create a hash link to the previous event:
+                  <ol class="algorithm">
+                    <li>
+Let |lastEvent| be the most recent event in |cel|.`log`, which will be the
+last entry in the array.
+                    </li>
+                    <li>
+Canonicalize |lastEvent| using JSON Canonicalization Scheme (JCS) as specified
+in [[RFC8785]]. Let |canonicalizedEvent| be the result.
+                    </li>
+                    <li>
+Compute the SHA3-256 <a data-cite="CID#Multihash">Multihash</a> of the
+UTF-8 encoded |canonicalizedEvent|. Let |hash| be the result.
+                    </li>
+                    <li>
+Encode |hash| using base58-btc encoding, prepending the
+<a data-cite="CID#Multibase">Multibase</a> (`z`) character to the encoding. Let
+|encodedHash| be the result.
+                    </li>
+                  </ol>
+                </li>
+                <li>
+Create a new event object ([=map=] |updateEvent|) with the following structure:
+                  <ol class="algorithm">
+                    <li>
+Set |updateEvent|.`event` to a new [=map=].
+                    </li>
+                    <li>
+Set |updateEvent|.`event`.`previousEvent` to |encodedHash|.
+This creates the hash-linked chain connecting this event to the previous event.
+                    </li>
+                    <li>
+Set |updateEvent|.`event`.`operation` to a new [=map=].
+                    </li>
+                    <li>
+Set |updateEvent|.`event`.`operation`.`type` to the string `update`.
+                    </li>
+                    <li>
+Set |updateEvent|.`event`.`operation`.`data`
+to the updated |didDocument| (which now includes the new proof).
+                    </li>
+                  </ol>
+                </li>
+                <li>
+Append |updateEvent| to |cel|.`log`.
+                </li>
+              </ol>
+            </li>
+            <li>
+Return the updated |didDocument| and updated |cel|. The |didDocument| now has
+a fresh cryptographic proof, and the |cel| contains a new hash-linked event
+recording the update operation.
             </li>
           </ol>
+
+          <p class="note">
+The update operation maintains the integrity of the Cryptographic Event Log
+through hash-linking. Each update event includes a `previousEvent` property
+containing the hash of the prior event, creating a verifiable chain that
+prevents tampering and enables auditing of the [=DID document=]'s complete history.
+After updating, implementations invoke the witness operation to obtain
+independent attestations of the update event.
+          </p>
+
+          <p class="issue" title="Sign operations, not DID documents?">
+The current algorithm has the controller sign the [=DID document=] to provide
+an assurance that the controller intended to make the modification to the
+[=DID document=]. The chain of events is witnessed, including all the hash-links
+back in history, to ensure that the order of events isn't reshuffled. In
+addition, it's presumed that registering storage requires the controller to
+perform the storage operation (another signature, but doesn't end up in the
+cryptographic log). This might result in a vulnerability. For example,
+an attacker might take a previously signed [=DID document=] and modifying
+the update operation to be a deactivation operation. In theory, registering
+this change would be prevented by the attacker not being able to sign the
+registration call (unless there was a vulnerability with the registration
+mechanism). This seems brittle, and in order to avoid the brittleness, we
+might just want the DID controller to sign the entire operation instead of
+only signing the [=DID document=].
+          </p>
 
         </section>
 
