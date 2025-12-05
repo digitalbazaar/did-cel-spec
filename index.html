@@ -458,8 +458,8 @@ Create an initial [=DID document=] structure ([=map=] |didDocument|) with the
 following properties:
               <ol class="algorithm">
                 <li>
-Set |didDocument|.`@context` to the string
-`"https://www.w3.org/ns/did/v1.1"`.
+Set |didDocument|.`@context` to an array containing the following
+two strings: `https://www.w3.org/ns/did/v1.1` and `https://w3id.org/didcel/v1`.
                 </li>
                 <li>
 Set |didDocument|.`assertionMethod` to an array containing a single
@@ -476,12 +476,18 @@ Set the verification method's `type` to `Multikey`.
 Set the verification method's `publicKeyMultibase` to
 |publicKey|.`publicKeyMultibase`.
                     </li>
+                    <li>
+Add a <a data-cite="CID#services">service entry</a> where the `type` is
+`CelStorageService` and the `serviceEndpoint` is a list of URLs that the
+controller will use to store the canonical version of the
+[=cryptographic event log=].
+                    </li>
                   </ol>
                 </li>
               </ol>
             </li>
             <li>
-Generate the [=DID=]by hashing the canonicalized [=DID document=]:
+Generate the [=DID=] by hashing the canonicalized [=DID document=]:
               <ol class="algorithm">
                 <li>
 Canonicalize |didDocument| using JSON Canonicalization Scheme (JCS) as specified
@@ -507,21 +513,10 @@ Set the `controller` property of the verification method in
               </ol>
             </li>
             <li>
-Generate a cryptographic proof for |didDocument| using a cryptosuite
-that is compatible with the generated |keyPair|, such as
-<a data-cite="VC-DI-ECDSA#ecdsa-jcs-2019">ecdsa-jcs-2019</a>. Set the
-`proofPurpose` to `assertionMethod`. Add the `proof` to the |didDocument|.
-            </li>
-            <li>
-Create the initial [=cryptographic event log=]:
+Generate the |event| object by performing the following steps:
               <ol class="algorithm">
                 <li>
-Create a new [=map=] |cryptographicEventLog| with a `log` property
-set to an array containing a single event object.
-                </li>
-                <li>
-The event object MUST contain an `event` property that is a [=map=]
-with an `operation` property.
+The event object MUST contain a [=map=] with an `operation` property.
                 </li>
                 <li>
 The `operation` [=map=] MUST contain:
@@ -530,9 +525,24 @@ The `operation` [=map=] MUST contain:
 A `type` property with the value `create`.
                     </li>
                     <li>
-A `data` property containing the complete |didDocument|.
+A `data` property containing the |didDocument|.
                     </li>
                   </ol>
+                </li>
+              </ol>
+            </li>
+            <li>
+Generate a cryptographic proof for |event| using a cryptosuite
+that is compatible with the generated |keyPair|, such as
+<a data-cite="VC-DI-ECDSA#ecdsa-jcs-2019">ecdsa-jcs-2019</a>. Set the
+`proofPurpose` to `assertionMethod`. Add the `proof` to the |event|.
+            </li>
+            <li>
+Create the initial [=cryptographic event log=]:
+              <ol class="algorithm">
+                <li>
+Create a new [=map=] |cryptographicEventLog| with a `log` property
+set to an array containing the |event| object.
                 </li>
               </ol>
             </li>
@@ -580,17 +590,6 @@ resistance to tampering by distributing trust across multiple independent
 allows [=DID controllers=] to select [=witness=] services, preventing single points of
 failure while maintaining cryptographic verifiability of the entire event
 history.
-        </p>
-
-        <p class="issue" title="Witnesses create forking concerns">
-It may be that in addition to [=witnesses=], [=DID controllers=] might need to commit
-to one or more systems that keep the latest [=cryptographic event log=] such that
-any attempts at forking would be detectable. Dishonest [=DID controllers=], or
-attackers that have compromised a [=DID controller=]'s cryptographic keys, might
-create divergent histories to gain an advantage over a system that relies on
-a particular DID. To prevent this attack, the [=DID controller=] would have to
-establish one or more systems that always have the latest [=DID document=] to
-prevent forking attacks.
         </p>
 
         <pre class="example nohighlight" title="Cryptographic event log after witnessing">
@@ -1119,23 +1118,6 @@ After updating, implementations invoke the [=witness=] operation to obtain
 independent attestations of the update event.
           </p>
 
-          <p class="issue" title="Sign operations, not DID documents?">
-The current algorithm has the controller sign the [=DID document=] to provide
-an assurance that the controller intended to make the modification to the
-[=DID document=]. The chain of events is [=witnessed=], including all the hashlinks
-back in history, to ensure that the order of events isn't reshuffled. In
-addition, it's presumed that registering storage requires the controller to
-perform the storage operation (another signature, but doesn't end up in the
-[=cryptographic event log=]). This might result in a vulnerability. For example,
-an attacker might take a previously signed [=DID document=] and modifying
-the update operation to be a deactivation operation. In theory, registering
-this change would be prevented by the attacker not being able to sign the
-registration call (unless there was a vulnerability with the registration
-mechanism). This seems brittle, and in order to avoid the brittleness, we
-might just want the [=DID controller=] to sign the entire operation instead of
-only signing the [=DID document=].
-          </p>
-
         </section>
 
       </section>
@@ -1387,10 +1369,10 @@ information is included in [=DID documents=] and when updates are performed.
 Batch multiple related changes into a single update operation when possible
 to reduce the granularity of information exposed through temporal analysis.
 For use cases requiring higher privacy, consider using ephemeral [=DIDs=] that
-are rotated regularly, or employing [=DIDs=] with shorter retention periods for
-their event logs. Organizations might also document their DID rotation and
+are rotated regularly, or employing [=DIDs=] with shorter active periods for
+their event logs. Organizations might also document their [=DID Document=]
 update policies to help users understand the privacy implications of using
-particular [=DIDs=].
+their [=DID=]-related services.
         </p>
       </section>
 
