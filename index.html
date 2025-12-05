@@ -1669,8 +1669,8 @@ of the [[[DID]]] specification, before reading this section.
 The security of the [=cryptographic event log=] relies on [=witness=] services
 providing independent attestations to [=DID document=] operations. If a
 sufficient number of [=witnesses=] collude or are compromised by an attacker,
-they could attest to fraudulent events in the log, such as unauthorized
-modifications to a [=DID document=] or attempts to fork the event history.
+they could deny witnessing calls from specific IP addresses or generate invalid
+proofs to deny a [=DID controller=] the ability to witness a particular event.
 The impact of such an attack depends on how many [=witnesses=] are required for
 an event to be considered valid and how many [=witnesses=] an attacker can
 control. If [=witnesses=] are operated by a single entity or share common
@@ -1685,11 +1685,11 @@ attestations from a minimum number of [=witnesses=] before accepting an event as
 valid, and can maintain lists of trusted [=witnesses=] with known good security
 practices. [=DID controllers=] are encouraged to select geographically and
 organizationally distributed [=witnesses=] to minimize the risk of coordinated
-attacks. Monitoring [=witness=] behavior over time can help detect anomalies that
-might indicate compromise, such as [=witnesses=] consistently signing events that
-other [=witnesses=] reject. For critical applications, implementing [=witness=]
-rotation policies or requiring attestations from a larger pool of [=witnesses=]
-can provide additional security margins.
+attacks. Monitoring [=witness=] behavior over time can help detect anomalies
+that might indicate compromise, such as [=witnesses=] consistently refusing to
+signing events that other [=witnesses=] sign. For critical applications,
+implementing [=witness=] rotation policies or requiring attestations from a
+larger pool of [=witnesses=] can provide additional security margins.
         </p>
       </section>
 
@@ -1714,16 +1714,15 @@ Implementers are encouraged to implement key expiration mechanisms using the
 `expires` property on [=verification methods=], which limits the time window
 during which a compromised key can be abused. When rotating keys, [=DID
 controllers=] are advised to follow a process of first adding new keys to the
-[=DID document=], then expiring old keys, and only after confirming the new
-keys are functional should the old keys be removed. This overlapping approach
-ensures continuity of operations during rotation. For critical keys,
-maintaining offline backup keys with authority to perform emergency rotations
-can provide recovery paths when primary keys are compromised. Systems that
-verify [=data integrity proofs=] are encouraged to check expiration times and
-reject proofs created after a [=verification method=] has expired, limiting
-the damage from compromised keys. Regular key rotation schedules, even
-without evidence of compromise, can reduce the impact window of undetected
-key compromises.
+[=DID document=], then expiring old keys, and only after confirming the new keys
+are functional should the old keys be removed. This overlapping approach ensures
+continuity of operations during rotation. For critical keys, maintaining offline
+backup keys with authority to perform emergency rotations can provide recovery
+paths when primary keys are compromised. Conforming systems that verify [=data
+integrity proofs=] check [=verification method=] expiration times and reject
+proofs created after a [=verification method=] has expired, limiting the damage
+from compromised keys. Regular key rotation schedules, even without evidence of
+compromise, can reduce the impact window of undetected key compromises.
         </p>
       </section>
 
@@ -1739,23 +1738,23 @@ become vulnerable to collision attacks where two different inputs produce the
 same hash output, attackers could create fraudulent [=DID documents=] that
 resolve to the same [=DID=] identifier, forge event chain links to hide
 modifications, or substitute malicious events while maintaining apparent
-chain integrity. The security of the entire [=DID=] method depends on the
-continued collision resistance of SHA3-256.
+chain integrity. The security of the current [=DID=] method depends on the
+continued collision resistance of SHA3-256, though upgrading to a newer
+cryptographic hashing algorithm is possible and supported.
         </p>
 
         <p>
-While SHA3-256 is currently considered cryptographically secure with no
-known practical collision attacks, implementers are advised to monitor
-cryptographic research for any developments that might weaken SHA3-256.
-Systems can be designed with cryptographic agility in mind, allowing for
-future migration to stronger hash functions if SHA3-256 becomes compromised.
-When verifying [=DIDs=], implementations are encouraged to validate not just
-that hash links are correctly formed, but also that the entire chain of
-events maintains integrity from the creation event forward. For long-lived
-[=DIDs=], [=DID controllers=] might consider planning for eventual migration
-to new [=DIDs=] using stronger cryptographic primitives before SHA3-256
-reaches end of life, though the timeline for such migrations is measured in
-decades given current cryptographic knowledge.
+While SHA3-256 is currently considered cryptographically secure with no known
+practical collision attacks, implementers are advised to monitor cryptographic
+research for any developments that might weaken SHA3-256. Systems can be
+designed with cryptographic agility in mind, allowing for future migration to
+stronger hash functions if SHA3-256 becomes compromised. When verifying
+[=DIDs=], conforming implementation validate not just that hash links are
+correctly formed, but also that the entire chain of events maintains integrity
+from the creation event forward. For long-lived [=DIDs=], [=DID controllers=]
+might consider planning for eventual migration to stronger cryptographic
+primitives before SHA3-256 reaches end of life, though the timeline for such
+migrations is measured in decades given current cryptographic knowledge.
         </p>
       </section>
 
@@ -1778,18 +1777,12 @@ valid even when presented out of their intended context.
         <p>
 The [=hashlinking=] of events through the `previousEvent` property provides the
 primary defense against replay attacks by binding each event to a specific
-position in the event chain. Implementations that verify [=cryptographic event
-logs=] are advised to validate that each event's `previousEvent` hash correctly
-matches the hash of the preceding event, and that the chain is unbroken from
-the creation event to the most recent event. [=Witness=] proofs are encouraged to
-include additional context-binding information such as the [=DID=] identifier
-being attested to, which prevents events from being replayed across different
-[=DIDs=]. For applications requiring stronger replay protection, events can
-include timestamps or sequence numbers that are validated during
-verification, though this introduces additional complexity and potential for
-timing-based attacks. Systems that maintain state about known [=DIDs=] can
-track the highest event sequence number they have seen for each [=DID=] and
-reject events that appear to rewind the log.
+position in the event chain. Conforming implementations that verify
+[=cryptographic event logs=] validate that each event's `previousEvent` hash
+correctly matches the hash of the preceding event, and that the chain is
+unbroken from the creation event to the most recent event. Systems that maintain
+state about known [=DIDs=] can track the highest event sequence number they have
+seen for each [=DID=] and reject events that appear to rewind the log.
         </p>
       </section>
 
@@ -1802,29 +1795,21 @@ The [=cryptographic event log=] creates a linear chain of events through
 controller=] or an attacker with access to the [=DID controller=]'s keys
 could create multiple divergent chains (forks) from the same parent event.
 This could result in different observers seeing different versions of the
-[=DID document=] depending on which fork they have accessed. While [=witness=]
-services provide some protection by refusing to attest to events that fork
-from previously [=witnessed=] chains, a compromised or malicious [=DID
-controller=] might selectively present different forks to different [=witnesses=]
-or observers, creating confusion about the authoritative state of the [=DID
-document=].
+[=DID document=] depending on which fork they have accessed. A compromised or
+malicious [=DID controller=] might try to selectively present different forks to
+different [=verifiers=]], creating confusion about the authoritative
+state of the [=DID document=].
         </p>
 
         <p>
-Detecting forks requires observers to compare event logs from multiple
-sources and identify cases where divergent chains exist for the same [=DID=].
-[=Witness=] services are encouraged to maintain persistent records of all events
-they have attested to and refuse to sign events that would create a fork from
-a previously [=witnessed=] chain. Implementations that resolve [=DIDs=] can query
-multiple independent sources for the event log and flag any cases where
-inconsistent histories are detected. For critical applications, [=DID
-controllers=] might publish commitments to their event log in external
-transparency logs or blockchain systems, making forks detectable by any
-observer. The [=witness=]-based architecture provides distributed verification,
-but ultimately relies on [=witnesses=] maintaining integrity and rejecting fork
-attempts. Clear policies about how [=witnesses=] handle fork detection, including
-whether they alert other [=witnesses=] or [=DID=] observers, can strengthen the
-overall security posture against forking attacks.
+Detecting forks requires [=verifiers=] to compare event logs from multiple
+[=cryptographic event log=] storage services listed in the DID Document history
+and identify cases where divergent chains exist for the same [=DID=]. The
+[=cryptographic event log=] storage services-based architecture provides fork
+detection that is independent of the [=witness=] services. Clear policies about
+how [=verifiers=] handle fork detection, such as "longest fork always wins", and
+whether [=cryptographic event log=] services alert each other or [=DID=]
+observers, can strengthen the overall security posture against forking attacks.
         </p>
       </section>
 
@@ -1833,32 +1818,32 @@ overall security posture against forking attacks.
 
         <p>
 Each event in a [=cryptographic event log=] contains [=data integrity proofs=]
-on the [=DID document=] and potentially multiple [=witness=] proofs attesting to
+on the operation and one or more [=witness=] proofs attesting to
 the event. Verifying the complete log requires checking every proof in every
 event from the creation event forward, which involves cryptographic signature
-verification operations, hash computations, and canonicalization of JSON-LD
+verification operations, hash computations, and canonicalization of JSON
 data structures. For [=DIDs=] with long histories containing many events and
 [=witness=] proofs, the computational cost of full verification can be
-substantial, potentially leading to resource exhaustion or denial-of-service
+significant, potentially leading to resource exhaustion or denial-of-service
 conditions when processing maliciously crafted logs with excessive events or
-complex proof structures.
+operation data.
         </p>
 
         <p>
-Implementations are encouraged to set reasonable limits on the resources
-they will expend when verifying [=cryptographic event logs=], including maximum
+Implementations are encouraged to set reasonable limits on the resources they
+will expend when verifying [=cryptographic event logs=], including maximum
 numbers of events to process, maximum verification time, and maximum memory
 usage. When possible, verification can be optimized by caching the results of
 verifying earlier portions of the log and only verifying new events since the
 last cached verification point. For applications that do not require complete
-historical verification, implementations might verify only the most recent
-events and rely on the [=witness=] attestations as evidence that earlier events
-were valid at the time they were created. Rate limiting the acceptance of
-[=DID=] resolution requests can prevent attackers from overwhelming systems
-with verification requests for complex [=DIDs=]. Clear documentation about
-the expected verification costs and performance characteristics helps
-implementers make informed decisions about resource allocation for [=DID=]
-verification operations.
+historical verification, implementations might depend on the [=cryptographic
+event log=] storage services to verify the history since they are not supposed
+to accept cryptographic event logs with malformed histories. Rate limiting the
+acceptance of [=DID=] resolution requests can prevent attackers from
+overwhelming systems with verification requests for complex [=DID documents=].
+Clear documentation about the expected verification costs and performance
+characteristics helps implementers make informed decisions about resource
+allocation for [=DID=] verification operations.
         </p>
       </section>
 
@@ -1901,29 +1886,32 @@ decisions about which [=witnesses=] to rely on for their security requirements.
         <h3>Cryptographic Algorithm Aging</h3>
 
         <p>
-The `did:cel` method uses ECDSA with P-256 curves for [=verification
-methods=] and [=data integrity proofs=], and SHA3-256 for hashing operations.
+The `did:cel` method uses modern cryptographic signing and hashing algorithms.
 While these cryptographic algorithms are currently considered secure, all
-cryptographic algorithms have a finite lifetime and eventually become
-vulnerable to attacks as computational capabilities advance or new
-cryptographic breakthroughs occur. [=DIDs=] created today might need to
-remain valid and verifiable for many years or decades, potentially outliving
-the security guarantees of the cryptographic algorithms they employ. As
-algorithms age, signatures and hashes created using those algorithms provide
-diminishing security, but the immutable nature of the [=cryptographic event log=]
-means historical events cannot be re-signed with stronger algorithms.
+cryptographic algorithms have a finite lifetime and eventually become vulnerable
+to attacks as computational capabilities advance or new cryptographic
+breakthroughs occur. [=DIDs=] created today might need to remain valid and
+verifiable for many years or decades, potentially outliving the security
+guarantees of the cryptographic algorithms they employ. As algorithms age,
+signatures and hashes created using those algorithms provide diminishing
+security. The immutable nature of the [=cryptographic event log=] means
+that while historical events cannot be re-signed with stronger algorithms, the
+historical chain of events can be signed with stronger algorithms (such as
+post-quantum signatures) under certain conditions (such as the security of
+SHA3-256 remaining uncompromised even if ECDSA becomes compromised).
         </p>
 
         <p>
-[=DID controllers=] planning for long-term use of their [=DIDs=] are
-encouraged to monitor cryptographic algorithm recommendations and plan for
-eventual migration to [=DIDs=] using stronger algorithms before current
-algorithms are compromised. Implementing cryptographic layering by including
-multiple [=verification methods=] using different cryptographic algorithms
-can provide continued security even if one algorithm is compromised,
-following the guidance in the Data Integrity specification. Systems that
-verify [=DIDs=] can maintain policies about which cryptographic algorithms
-are acceptable and reject [=DIDs=] using deprecated algorithms that no longer
+[=DID controllers=] planning for long-term use of their [=DIDs=] are encouraged
+to monitor cryptographic algorithm recommendations and plan for upgrading
+algorithms or eventually migrating to [=DIDs=] using stronger algorithms before
+current algorithms are compromised. Implementing cryptographic layering by
+including multiple [=verification methods=] using different cryptographic
+algorithms, such as pre-quantum and post-quantum cryptographic algorithms, can
+provide continued security even if one algorithm is compromised, following the
+guidance in the [[[?VC-DATA-INTEGRITY]]] specification. Systems that verify
+[=DIDs=] can maintain policies about which cryptographic algorithms are
+acceptable and reject [=DIDs=] using deprecated algorithms that no longer
 provide adequate security. For historical preservation, the [=witness=]
 attestations in the log provide evidence that events were considered valid at
 the time they were created, even if the underlying cryptographic algorithms
@@ -1937,35 +1925,33 @@ timelines.
         <h3>Timestamp Manipulation</h3>
 
         <p>
-[=Witness=] [=data integrity proofs=] might include timestamp information
-indicating when the [=witness=] attested to an event. While timestamps can be
-useful for understanding the temporal sequence of events and detecting
-anomalies, they also introduce potential for manipulation if [=witnesses=]
-collude or if their clocks are inaccurate or maliciously adjusted. An
-attacker who compromises multiple [=witnesses=] might create backdated
-attestations to make fraudulent events appear to have occurred earlier than
-they actually did, or forward-date attestations to hide the timing of
-malicious activities. Relying on timestamps for security-critical decisions
-can be problematic given the difficulty of ensuring accurate, tamper-proof
-time sources across distributed [=witness=] services.
+[=Witness=] [=data integrity proofs=] include timestamp information indicating
+when the [=witness=] attested to an event. While timestamps can be useful for
+understanding the temporal sequence of events and detecting anomalies, they also
+introduce potential for manipulation if [=witnesses=] collude or if their clocks
+are inaccurate or maliciously adjusted. An attacker who compromises multiple
+[=witnesses=] might create backdated attestations to make fraudulent events
+appear to have occurred earlier than they actually did, or forward-date
+attestations to hide the timing of malicious activities. Relying on timestamps
+for security-critical decisions can be problematic given the difficulty of
+ensuring accurate, tamper-proof time sources across distributed [=witness=]
+services.
         </p>
 
         <p>
 Implementations are encouraged to use timestamps as informational indicators
-rather than security-critical values, and to corroborate timing information
-from multiple independent sources before relying on it. When [=witnesses=]
-include timestamps in their proofs, using multiple [=witnesses=] with independent
-time sources can help detect significant clock discrepancies or manipulation
-attempts. Systems that detect large discrepancies in [=witness=] timestamps for
-the same event can flag those events for additional scrutiny. For
-applications requiring strong temporal guarantees, consider anchoring events
-to external time-stamping authorities or blockchain systems that provide
-verifiable proof of time. The [=hashlinked=] structure of the event log provides
-a partial ordering guarantee—events must have occurred in the order they
-appear in the chain—which can be more reliable than timestamp values for
+rather than security-critical values, and to corroborate timing information from
+multiple independent sources, such as the [=cryptographic event log=] storage
+services, before relying on it. When [=witnesses=] include timestamps in their
+proofs, using multiple [=witnesses=] with independent time sources can help
+detect significant clock discrepancies or manipulation attempts. Systems that
+detect large discrepancies in [=witness=] timestamps for the same event can flag
+those events for additional scrutiny. The [=hashlinked=] structure of the event
+log provides a partial ordering guarantee—events must have occurred in the order
+they appear in the chain—which are more reliable than timestamp values for
 determining relative event ordering. Clear documentation about the limitations
-of timestamp information helps prevent over-reliance on timing data that
-might be manipulated.
+of timestamp information helps prevent over-reliance on timing data that might
+be manipulated.
         </p>
       </section>
 
@@ -1973,68 +1959,69 @@ might be manipulated.
         <h3>Storage and Retrieval Security</h3>
 
         <p>
-[=cryptographic event logs=] need to be stored and made available for [=DID=]
-resolution, but the specification does not mandate a particular storage
-mechanism. Depending on the chosen storage approach—whether distributed
-ledgers, decentralized storage systems, centralized repositories, or peer-to-peer
-networks—different security considerations apply. If log storage is
-compromised, attackers might delete events to hide malicious modifications,
-modify historical events to change the [=DID document=] history, or deny
-access to legitimate log data preventing [=DID=] resolution. The integrity
-and availability of the storage system directly impacts the security and
-usability of the [=DID=].
+[=Cryptographic event logs=] are stored by storage services listed in the [=DID
+Document=] and made available during [=DID=] resolution, but the specification
+does not mandate a particular storage mechanism. Depending on the chosen storage
+approach—whether distributed ledgers, decentralized storage systems, centralized
+repositories, or peer-to-peer networks—different security considerations apply.
+If log storage is compromised, attackers might delete events to hide malicious
+modifications, modify historical events to change the [=DID document=] history,
+or deny access to legitimate log data preventing [=DID=] resolution. The
+integrity and availability of the storage system directly impacts the security
+and usability of the [=DID=].
         </p>
 
         <p>
-[=DID controllers=] are encouraged to store their [=cryptographic event logs=] in
-multiple independent locations to protect against data loss and ensure
-availability even if one storage location fails or is compromised. The
+[=DID controllers=] are encouraged to store their [=cryptographic event logs=]
+with multiple independent storage services to protect against data loss and
+ensure availability even if one storage location fails or is compromised. The
 [=hashlinked=] structure and [=witness=] proofs in the log provide integrity
-protection, meaning that modifications to stored log data can be detected
-during verification, but this does not prevent deletion or denial of access.
-Using storage systems with built-in redundancy, access controls, and audit
-logging can help protect log data from unauthorized modification or deletion.
-For public [=DIDs=], publishing logs to multiple publicly accessible
-repositories or content-addressed storage systems increases resilience and
-makes censorship more difficult. Implementations that retrieve logs are
-encouraged to verify the complete integrity of the log using the [=hashlinking=]
-and proofs, rather than trusting that stored data is authentic. Backup
-strategies that maintain copies of logs in geographically and operationally
-diverse locations can ensure long-term preservation and availability.
+protection, meaning that modifications to stored log data can be detected during
+verification, but this does not prevent deletion or denial of access. Using
+storage systems with built-in redundancy, access controls, and audit logging can
+help protect log data from unauthorized modification or deletion. For public
+[=DIDs=], publishing logs to multiple publicly accessible storage services
+increases resilience and makes censorship more difficult. Implementations that
+retrieve logs are encouraged to verify the complete integrity of the log using
+the [=hashlinking=] and proofs, rather than trusting that stored data is
+authentic. Backup strategies that maintain copies of logs in geographically and
+operationally diverse locations can ensure long-term preservation and
+availability.
         </p>
       </section>
 
       <section>
-        <h3>DID Document Proof Validation</h3>
+        <h3>Proof Validation</h3>
 
         <p>
-Each [=DID document=] in the [=cryptographic event log=] contains a [=data
-integrity proof=] that cryptographically binds the document to the [=DID
-controller=] through a signature created with a [=verification method=]
-contained in the document. Proper validation of these proofs is critical for
-security—if implementations skip proof verification or perform it
-incorrectly, they might accept fraudulent [=DID documents=] that were not
-actually created by the legitimate [=DID controller=]. The complexity of
-[=data integrity proof=] verification, which involves JSON-LD processing,
-canonicalization, and signature verification, creates opportunities for
-implementation errors that could compromise security.
+Each operation in the [=cryptographic event log=] contains a [=data integrity
+proof=] that cryptographically binds the operation to the [=DID document=]
+through a signature created with a [=verification method=] contained in the
+document. [=Witnesses=] proofs are also attached to each event in the
+[=cryptographic event log=]. Proper validation of these proofs is critical for
+security—if implementations skip proof verification or perform it incorrectly,
+they might accept fraudulent [=DID documents=] that were not actually created by
+the legitimate [=DID controller=]. The process of [=data integrity proof=]
+verification, which involves JSON processing, canonicalization, and signature
+verification, creates opportunities for implementation errors that could
+compromise security.
         </p>
 
         <p>
 Implementations are strongly encouraged to use well-tested, standardized
 libraries for [=data integrity proof=] verification rather than implementing
-verification logic from scratch, as cryptographic implementations are prone
-to subtle errors that can completely compromise security. Following the
-verification algorithms specified in the Data Integrity specification
+verification logic from scratch, as cryptographic implementations are prone to
+subtle errors that can completely compromise security. Following the
+verification algorithms specified in the [[[VC-DATA-INTEGRITY]]] specification
 precisely, without shortcuts or optimizations that might skip critical
-validation steps, is important for maintaining security. Verification
-processes are encouraged to validate all aspects of the proof including the
-signature value, the proof purpose, the verification method reference, and
-any additional proof metadata. Regular testing with both valid and
-intentionally malformed proofs can help ensure that implementations correctly
-reject invalid proofs. Implementers are advised to review the security
-considerations in the Data Integrity specification for additional guidance on
-proof verification.
+validation steps, is important for maintaining security. Verification processes
+are encouraged to validate all aspects of the proof including the signature
+value, the proof purpose, the verification method reference, and any additional
+proof metadata. Regular testing with both valid and intentionally malformed
+proofs can help ensure that implementations correctly reject invalid proofs.
+Implementers are advised to review the security considerations in the
+[[[VC-DATA-INTEGRITY]]] specification for additional guidance on proof
+verification.
         </p>
       </section>
 
@@ -2062,7 +2049,7 @@ processes are encouraged to validate the complete chain from the creation
 event forward without skipping any events, as gaps in verification could hide
 inserted or modified events. The creation event, which has no previous event,
 represents a trust anchor and its authenticity can be verified through [=witness=]
-attestations and the [=data integrity proof=] on the [=DID document=]. For
+attestations and the [=data integrity proof=] on the operation. For
 performance reasons, implementations might cache verification results for
 earlier portions of the chain, but care is needed to ensure cached results are
 not reused when the log has been modified. Clear error handling and reporting
@@ -2074,32 +2061,32 @@ when hash verification fails helps diagnose attacks or data corruption issues.
         <h3>Witness Proof Threshold Requirements</h3>
 
         <p>
-The `did:cel` specification includes [=witness=] attestations for events but does
-not mandate how many [=witness=] proofs are required for an event to be
-considered valid or trustworthy. Different applications and trust models
-might require different numbers of [=witnesses=]—some might accept events with a
-single [=witness=] attestation, while others might require unanimous agreement
-from multiple [=witnesses=]. If the threshold is set too low, attackers who
-compromise a small number of [=witnesses=] can attest to fraudulent events. If
-set too high, legitimate operations might be blocked by [=witness=] unavailability
-or disagreement, creating denial-of-service conditions.
+The `did:cel` specification includes [=witness=] attestations for events but
+does not mandate how many [=witness=] proofs are required for an event to be
+considered valid or trustworthy. Different applications and trust models might
+require different numbers of [=witnesses=]—some might accept events with a
+single [=witness=] attestation, while others might require multiple
+[=witnesses=]. If the threshold is set too low, attackers who compromise a small
+number of [=witnesses=] might be able to gain a denial-of-service advantage. If
+set too high, legitimate operations might be blocked by [=witness=]
+unavailability or disagreement, creating denial-of-service conditions.
         </p>
 
         <p>
 Implementations are encouraged to establish clear policies about [=witness=]
-proof requirements that balance security needs against operational
-flexibility. For high-security applications, requiring attestations from a
-majority or supermajority of a defined [=witness=] set provides protection
-against individual [=witness=] compromises. Lower-security applications might
-accept events with fewer attestations but implement monitoring to detect
-suspicious patterns. Policies can be adaptive, such as requiring more
-[=witnesses=] for security-critical operations like key rotations while accepting
-fewer [=witnesses=] for routine updates. When [=witnesses=] disagree about an event's
-validity, implementations are encouraged to investigate the discrepancy rather
-than automatically accepting or rejecting the event. Clear documentation
-about [=witness=] requirements helps [=DID controllers=] understand what level of
-[=witness=] consensus they need to achieve for their operations to be accepted by
-verifiers. [=Witness=] selection strategies that include [=witnesses=] with diverse
+proof requirements that balance security needs against operational flexibility.
+For high-security applications, requiring attestations from a majority or
+supermajority of a defined [=witness=] set provides protection against
+individual [=witness=] compromises. Lower-security applications might accept
+events with fewer attestations but implement monitoring to detect suspicious
+patterns. Policies can be adaptive, such as requiring more [=witnesses=] for
+security-critical operations like key rotations while accepting fewer
+[=witnesses=] for routine updates. When [=witnesses=] seem to be acting in a way
+that would lead to a denial of service, implementations are encouraged to
+investigate the discrepancy. Clear documentation about [=witness=] requirements
+helps [=DID controllers=] understand what level of [=witness=] attestation they
+need to achieve for their operations to be accepted by [=verifiers=].
+[=Witness=] selection strategies that include [=witnesses=] with diverse
 operational and governance models can provide more robust validation than
 [=witnesses=] operated by related entities.
         </p>
@@ -2126,9 +2113,7 @@ appearing to be authorized changes in the [=cryptographic event log=].
 management practices including secure generation, storage, and access control
 for private keys. Using hardware security modules, secure enclaves, or other
 tamper-resistant storage for keys that control critical [=DIDs=] can
-significantly reduce the risk of key theft. Multi-signature schemes where
-multiple keys are required to authorize modifications can prevent a single
-compromised key from enabling unauthorized updates. Regular security audits,
+significantly reduce the risk of key theft. Regular security audits,
 monitoring for unexpected [=DID document=] changes, and maintaining offline
 backups of key material can help detect and recover from compromises.
 Implementing the principle of least privilege by using different
@@ -2144,34 +2129,32 @@ and prevent further unauthorized changes.
         <h3>Cryptosuite Downgrade Attacks</h3>
 
         <p>
-As cryptographic algorithms age and newer, stronger algorithms become
-available, [=DID documents=] might contain [=verification methods=] using
-different cryptographic suites with varying security strengths. An attacker
-might attempt to force systems to use weaker cryptographic algorithms by
-selectively removing stronger [=verification methods=] from [=DID documents=]
-they present to verifiers, or by exploiting verification implementations that
-default to weaker algorithms when multiple options are available. If
-successful, such downgrade attacks reduce the effective security to that of
-the weakest algorithm, potentially enabling signature forgeries or other
-cryptographic breaks that would not be possible against stronger algorithms.
+As cryptographic algorithms age and newer, stronger algorithms become available,
+[=DID documents=] might contain [=verification methods=] using different
+cryptographic suites with varying security strengths. An attacker might attempt
+to force systems to use weaker cryptographic algorithms by by exploiting
+verification implementations that default to weaker algorithms when multiple
+options are available. If successful, such downgrade attacks reduce the
+effective security to that of the weakest algorithm, potentially enabling
+signature forgeries or other cryptographic breaks that would not be possible
+against stronger algorithms.
         </p>
 
         <p>
 Implementations are encouraged to maintain policies about which cryptographic
-algorithms are acceptable and to reject [=DID documents=] or proofs using
-algorithms that no longer provide adequate security. When [=DID documents=]
-contain multiple [=verification methods=] using different algorithms,
-verification processes are advised to require proofs using the strongest
-available algorithm rather than accepting proofs from any method. [=DID
-controllers=] are encouraged to remove deprecated [=verification methods=]
-using obsolete algorithms from their [=DID documents=] once stronger methods
-are in place, rather than maintaining weak methods for backward compatibility.
-Clear documentation about supported cryptographic algorithms and their
-expected security lifetimes helps both [=DID controllers=] and verifiers make
-informed decisions about algorithm selection. Following the cryptographic
-agility guidance in the Data Integrity specification enables smooth
-transitions to newer algorithms without compromising security during
-migration periods.
+algorithms are acceptable and to reject [=cryptographic event logs=] or proofs
+using algorithms that no longer provide adequate security. When [=DID
+documents=] contain multiple [=verification methods=] using different
+algorithms, verification processes are advised to require proofs using the
+strongest available algorithm rather than accepting weaker proofs. [=DID
+controllers=] are encouraged to remove deprecated [=verification methods=] using
+obsolete algorithms from their [=DID documents=] once stronger methods are in
+place, rather than maintaining weak methods for backward compatibility. Clear
+documentation about supported cryptographic algorithms and their expected
+security lifetimes helps both [=DID controllers=] and verifiers make informed
+decisions about algorithm selection. Following the cryptographic agility
+guidance in the [[[VC-DATA-INTEGRITY]]] specification enables smooth transitions
+to newer algorithms without compromising security during migration periods.
         </p>
       </section>
 
