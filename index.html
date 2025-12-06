@@ -824,6 +824,33 @@ independent attestations of the update event.
         <h3>Heartbeat</h3>
 
         <p>
+The heartbeat operation prevents an attacker, such as a compromised
+[=cryptographic event log=] storage service, from truncating a cryptographic
+log. If the attacker attacker attempts to truncate the cryptographic log beyond
+the heartbeat window for a specific [=DID=], it will be interpreted as a
+deactivation by a [=verifier=]. [=DID documents=] created with the `did:cel`
+method can include a `heartbeatFrequency` property that specifies how frequently
+heartbeat events should be generated to prevent automatic deactivation. When the
+time elapsed since the last event in the [=cryptographic event log=] exceeds the
+`heartbeatFrequency` duration, the [=DID=] is considered deactivated by
+[=verifiers=] or [=cryptographic event log=] storage services. Any events,
+including heartbeat events, reset this timer, demonstrating that the [=DID
+controller=] remains in control and wishes to keep the [=DID=] active.
+        </p>
+
+        <p>
+Unlike update operations that modify the [=DID document=], heartbeat events
+contain only an operation structure with a `type` of `heartbeat` and no
+associated data payload. This minimal structure reduces the computational cost
+and storage requirements for maintaining [=DID=] liveness while still providing
+cryptographic proof that the [=DID controller=] possesses the private keys
+necessary to sign events. The heartbeat event is signed using an assertion
+method key and [=hashlinked=] to the previous event in the log, maintaining the
+integrity of the event chain. After creating a heartbeat event, implementations
+typically invoke the [=witness=] operation to obtain independent temporal
+attestations, which provide evidence that the heartbeat occurred at a specific
+point in time and can be used to verify compliance with the `heartbeatFrequency`
+policy.
         </p>
 
         <pre class="example nohighlight" title="Cryptographic event log after a heartbeat event"
@@ -834,12 +861,98 @@ independent attestations of the update event.
           <h4>Document Heartbeat Algorithm</h4>
 
           <p>
+The following algorithm specifies how to create a heartbeat event and append it
+to the [=cryptographic event log=]. The heartbeat operation demonstrates
+continued control of the [=DID=] without modifying the [=DID document=]
+contents. The algorithm takes a [=map=] |assertionMethod| (the key pair to use
+for signing) and a [=map=] |cel| (the existing [=cryptographic event log=]) as
+input. Output is the updated |cel| with the heartbeat event appended, or an
+error. Whenever this algorithm encodes strings, it MUST use UTF-8 encoding.
           </p>
 
           <ol class="algorithm">
             <li>
+Create a hash link to the previous event:
+              <ol class="algorithm">
+                <li>
+Let |lastEvent| be the most recent event in |cel|.`log`, which will be the
+last entry in the array.
+                </li>
+                <li>
+Canonicalize |lastEvent| using JSON Canonicalization Scheme (JCS) as specified
+in [[RFC8785]]. Let |canonicalizedEvent| be the result.
+                </li>
+                <li>
+Compute the SHA3-256 <a data-cite="CID#Multihash">Multihash</a> of the
+UTF-8 encoded |canonicalizedEvent|. Let |hash| be the result.
+                </li>
+                <li>
+Encode |hash| using base58-btc encoding, prepending the
+<a data-cite="CID#Multibase">Multibase</a> (`z`) character to the encoding. Let
+|encodedHash| be the result.
+                </li>
+              </ol>
+            </li>
+            <li>
+Create the heartbeat event object:
+              <ol class="algorithm">
+                <li>
+Create a new event object ([=map=] |heartbeatEvent|).
+                </li>
+                <li>
+Set |heartbeatEvent|.`previousEventHash` to |encodedHash|.
+This creates the [=hashlinked=] chain connecting this event to the previous event.
+                </li>
+                <li>
+Set |heartbeatEvent|.`operation` to a new [=map=].
+                </li>
+                <li>
+Set |heartbeatEvent|.`operation`.`type` to the string `heartbeat`.
+                </li>
+              </ol>
+            </li>
+            <li>
+Generate a cryptographic proof for |heartbeatEvent|:
+              <ol class="algorithm">
+                <li>
+Create a [=data integrity proof=] using the cryptosuite compatible with
+|assertionMethod| (such as
+<a data-cite="VC-DI-ECDSA#ecdsa-jcs-2019">ecdsa-jcs-2019</a>). Let |proof| be the
+result. The `proofPurpose` MUST be set to `assertionMethod`.
+                </li>
+                <li>
+Set |heartbeatEvent|.`proof` to |proof|.
+                </li>
+              </ol>
+            </li>
+            <li>
+Append the heartbeat event to the [=cryptographic event log=]:
+              <ol class="algorithm">
+                <li>
+Create a new log entry ([=map=] |logEntry|) with an `event` property set to
+|heartbeatEvent|.
+                </li>
+                <li>
+Append |logEntry| to |cel|.`log`.
+                </li>
+              </ol>
+            </li>
+            <li>
+Return the updated |cel|. The [=cryptographic event log=] now contains a new
+[=hashlinked=] heartbeat event that demonstrates continued control without modifying
+the [=DID document=].
             </li>
           </ol>
+
+          <p class="note">
+After creating a heartbeat event, implementations invoke the [=witness=]
+operation to obtain independent temporal attestations. The timestamps in
+[=witness=] proofs provide evidence of when the heartbeat occurred, which can be
+used to verify compliance with the `heartbeatFrequency` policy specified in the
+[=DID document=]. [=Verifiers=] might reject [=DIDs=] where the time elapsed
+since the last event exceeds the `heartbeatFrequency` duration, treating such
+[=DIDs=] as potentially deactivated.
+          </p>
 
         </section>
 
@@ -849,6 +962,33 @@ independent attestations of the update event.
         <h3>Deactivate</h3>
 
         <p>
+The deactivate operation permanently disables a `did:cel` [=DID=], signaling
+that the [=DID controller=] no longer wishes to use the identifier and that it
+is not to be trusted for any future operations. Once a deactivation event is
+added to the [=cryptographic event log=] and [=witnessed=], the [=DID=] enters a
+terminal state where no further updates, heartbeats, or other operations can be
+performed. Deactivation is irreversible—the [=DID=] cannot be reactivated or
+modified after a deactivation event is recorded. This operation is typically
+used when a [=DID controller=] is retiring an identifier or is migrating to a
+new [=DID=] and wishes to explicitly deprecate the old identifier to prevent
+confusion or misuse.
+        </p>
+
+        <p>
+Similar to heartbeat operations, deactivation events contain only an operation
+structure with a `type` of `deactivate` and no associated data payload. The
+deactivation event is signed using an assertion method key from the current
+[=DID document=] and [=hashlinked=] to the previous event in the log, proving
+that the [=DID controller=] authorized the deactivation. After creating a
+deactivation event, implementations invoke the [=witness=] operation to obtain
+independent attestations of the deactivation, which provides temporal evidence
+and distributed validation that the deactivation occurred. [=Verifiers=] that
+encounter a [=cryptographic event log=] containing a deactivation event reject
+any future operations that use the [=DID=] after it is deactivated, treating it
+as permanently invalid thereafter. The complete event log, including the
+deactivation event, remains accessible for historical auditing and verification
+purposes, but the [=DID=] itself is no longer usable for authentication,
+assertion, or any other cryptographic operations.
         </p>
 
         <pre class="example nohighlight" title="Cryptographic event log after did:cel deactivation"
@@ -859,12 +999,102 @@ independent attestations of the update event.
           <h4>Document Deactivation Algorithm</h4>
 
           <p>
+The following algorithm specifies how to create a deactivation event and append
+it to the [=cryptographic event log=]. The deactivation operation permanently
+disables the [=DID=], preventing any further operations. The algorithm takes a
+[=map=] |assertionMethod| (the key pair to use for signing) and a [=map=] |cel|
+(the existing [=cryptographic event log=]) as input. Output is the updated |cel|
+with the deactivation event appended, or an error. Whenever this algorithm
+encodes strings, it MUST use UTF-8 encoding.
           </p>
 
           <ol class="algorithm">
             <li>
+Create a hash link to the previous event:
+              <ol class="algorithm">
+                <li>
+Let |lastEvent| be the most recent event in |cel|.`log`, which will be the
+last entry in the array.
+                </li>
+                <li>
+Canonicalize |lastEvent| using JSON Canonicalization Scheme (JCS) as specified
+in [[RFC8785]]. Let |canonicalizedEvent| be the result.
+                </li>
+                <li>
+Compute the SHA3-256 <a data-cite="CID#Multihash">Multihash</a> of the
+UTF-8 encoded |canonicalizedEvent|. Let |hash| be the result.
+                </li>
+                <li>
+Encode |hash| using base58-btc encoding, prepending the
+<a data-cite="CID#Multibase">Multibase</a> (`z`) character to the encoding. Let
+|encodedHash| be the result.
+                </li>
+              </ol>
+            </li>
+            <li>
+Create the deactivation event object:
+              <ol class="algorithm">
+                <li>
+Create a new event object ([=map=] |deactivateEvent|).
+                </li>
+                <li>
+Set |deactivateEvent|.`previousEventHash` to |encodedHash|.
+This creates the [=hashlinked=] chain connecting this event to the previous event.
+                </li>
+                <li>
+Set |deactivateEvent|.`operation` to a new [=map=].
+                </li>
+                <li>
+Set |deactivateEvent|.`operation`.`type` to the string `deactivate`.
+                </li>
+              </ol>
+            </li>
+            <li>
+Generate a cryptographic proof for |deactivateEvent|:
+              <ol class="algorithm">
+                <li>
+Create a [=data integrity proof=] using the cryptosuite compatible with
+|assertionMethod| (such as
+<a data-cite="VC-DI-ECDSA#ecdsa-jcs-2019">ecdsa-jcs-2019</a>). Let |proof| be
+the result. The `proofPurpose` MUST be set to `assertionMethod`.
+                </li>
+                <li>
+Set |deactivateEvent|.`proof` to |proof|.
+                </li>
+              </ol>
+            </li>
+            <li>
+Append the deactivation event to the [=cryptographic event log=]:
+              <ol class="algorithm">
+                <li>
+Create a new log entry ([=map=] |logEntry|) with an `event` property set to
+|deactivateEvent|.
+                </li>
+                <li>
+Append |logEntry| to |cel|.`log`.
+                </li>
+              </ol>
+            </li>
+            <li>
+Return the updated |cel|. The [=cryptographic event log=] now contains a
+deactivation event that permanently disables the [=DID=]. No further operations
+can be performed on this [=DID=].
             </li>
           </ol>
+
+          <p class="note">
+Deactivation is a terminal operation that cannot be reversed. Once a
+deactivation event is added to the [=cryptographic event log=] and
+[=witnessed=], the [=DID=] is permanently disabled. [=Verifiers=] that encounter
+a [=cryptographic event log=] containing a deactivation event reject any
+operations after the [=DID=] was deactivated. Implementations that allow
+deactivation might require additional authentication beyond the standard
+assertion method signature, such as multi-signature authorization or
+confirmation from recovery keys, to prevent accidental or malicious deactivation
+of active [=DIDs=]. The complete event log remains accessible for historical
+auditing, but the [=DID=] itself is no longer valid for any cryptographic
+operation beyond the deactivate timestamp.
+          </p>
 
         </section>
 
