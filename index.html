@@ -379,54 +379,8 @@ An example of a [=cryptographic event log=] containing the creation event for a
 `did:cel` [=DID=] is shown below.
         </p>
 
-        <pre class="example nohighlight" title="Cryptographic event log after did:cel creation">
-{
-  "log": [
-    {
-      "event": {
-        "operation": {
-          "type": "create",
-          "data": {
-            "@context": [
-              "https://www.w3.org/ns/did/v1.1",
-              "https://w3id.org/didcel/v1"
-            ],
-            "id": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB",
-            "assertionMethod": [
-              {
-                "id": "#zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig",
-                "type": "Multikey",
-                "controller": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB",
-                "publicKeyMultibase": "zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig"
-              }
-            ],
-            "recovery": [
-              {
-                "digestMultibase": "zW1GULyxrnPPxFC7NJcK1miKeVJ1Bxvb1ygLGgGRoAgVRKT"
-              }
-            ],
-            "service": {
-              "type": "CelStorageService",
-              "serviceEndpoint": [
-                "https://storage.gamma.example/v1",
-                "https://2001:db8:85a3::8a2e:370:7334/v1",
-                "https://celstorageiu7vnjjbwkhpilnemxj7ase3mhbshg7kx5tfydaniltxjqhy.onion/"
-              ]
-            }
-          }
-        },
-        "proof": {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:26:17Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z5rEayhU67tsThi4ncBWX8okqzmDsBkfVA6dE39QGR9vJwTHz5Qa8vvZRQYvE8imUPwiseFCF2s6bNMpz5MJ5m2Yw",
-          "verificationMethod": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB#zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig"
-        }
-      }
-    }
-  ]
-}
+        <pre class="example nohighlight" title="Cryptographic event log after did:cel creation"
+             data-include="./examples/create.cel">
         </pre>
 
         <section class="normative">
@@ -597,80 +551,8 @@ failure while maintaining cryptographic verifiability of the entire event
 history.
         </p>
 
-        <pre class="example nohighlight" title="Cryptographic event log after witnessing">
-{
-  "log": [
-    {
-      "event": {
-        "operation": {
-          "type": "create",
-          "data": {
-            "@context": [
-              "https://www.w3.org/ns/did/v1.1",
-              "https://w3id.org/didcel/v1"
-            ],
-            "id": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB",
-            "assertionMethod": [
-              {
-                "id": "#zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig",
-                "type": "Multikey",
-                "controller": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB",
-                "publicKeyMultibase": "zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig"
-              }
-            ],
-            "recovery": [
-              {
-                "digestMultibase": "zW1GULyxrnPPxFC7NJcK1miKeVJ1Bxvb1ygLGgGRoAgVRKT"
-              }
-            ],
-            "service": {
-              "type": "CelStorageService",
-              "serviceEndpoint": [
-                "https://storage.gamma.example/v1",
-                "https://2001:db8:85a3::8a2e:370:7334/v1",
-                "https://celstorageiu7vnjjbwkhpilnemxj7ase3mhbshg7kx5tfydaniltxjqhy.onion/"
-              ]
-            }
-          }
-        },
-        "proof": {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:26:17Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z5rEayhU67tsThi4ncBWX8okqzmDsBkfVA6dE39QGR9vJwTHz5Qa8vvZRQYvE8imUPwiseFCF2s6bNMpz5MJ5m2Yw",
-          "verificationMethod": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB#zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig"
-        }
-      },
-      "proof": [
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:37:52Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "zSX9hg5VPkxBTHRiZmYpC8Ytx5Bk5n9dpVrnZZ14bXiUoMoqe592zF2ekhD9x9LBgRS2febTu3Eedp87FVheZLxi",
-          "verificationMethod": "did:web:red-witness.example#vm-red-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:37:52Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "zsQFw4FDBvnvQMPRGf2y5D1EiuPxnomTE416QtrpfJEXpKaRB7S2pZTY3tTQ9cQcLrBW6zrreGVgR3ULtouvbsC7",
-          "verificationMethod": "did:web:green-witness.example#vm-green-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:37:52Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "zBzKKLtmUea4hWPs5F63w29bXvUCPxyN4GzmXWUMNwxWD5otDRnKh2w7Z7e5vVRwhL8RicACbb3yxVmti8ZLqxj9",
-          "verificationMethod": "did:web:blue-witness.example#vm-blue-1"
-        }
-      ]
-    }
-  ]
-}
+        <pre class="example nohighlight" title="Cryptographic event log after witnessing"
+             data-include="./examples/witness.cel">
         </pre>
 
         <section class="normative">
@@ -751,80 +633,8 @@ and resistance to single points of failure in the DID method infrastructure.
         <p>
         </p>
 
-        <pre class="example nohighlight" title="Cryptographic event log where a read is performed">
-{
-  "log": [
-    {
-      "event": {
-        "operation": {
-          "type": "create",
-          "data": {
-            "@context": [
-              "https://www.w3.org/ns/did/v1.1",
-              "https://w3id.org/didcel/v1"
-            ],
-            "id": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB",
-            "assertionMethod": [
-              {
-                "id": "#zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig",
-                "type": "Multikey",
-                "controller": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB",
-                "publicKeyMultibase": "zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig"
-              }
-            ],
-            "recovery": [
-              {
-                "digestMultibase": "zW1GULyxrnPPxFC7NJcK1miKeVJ1Bxvb1ygLGgGRoAgVRKT"
-              }
-            ],
-            "service": {
-              "type": "CelStorageService",
-              "serviceEndpoint": [
-                "https://storage.gamma.example/v1",
-                "https://2001:db8:85a3::8a2e:370:7334/v1",
-                "https://celstorageiu7vnjjbwkhpilnemxj7ase3mhbshg7kx5tfydaniltxjqhy.onion/"
-              ]
-            }
-          }
-        },
-        "proof": {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:26:17Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z5rEayhU67tsThi4ncBWX8okqzmDsBkfVA6dE39QGR9vJwTHz5Qa8vvZRQYvE8imUPwiseFCF2s6bNMpz5MJ5m2Yw",
-          "verificationMethod": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB#zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig"
-        }
-      },
-      "proof": [
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:37:52Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "zSX9hg5VPkxBTHRiZmYpC8Ytx5Bk5n9dpVrnZZ14bXiUoMoqe592zF2ekhD9x9LBgRS2febTu3Eedp87FVheZLxi",
-          "verificationMethod": "did:web:red-witness.example#vm-red-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:37:52Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "zsQFw4FDBvnvQMPRGf2y5D1EiuPxnomTE416QtrpfJEXpKaRB7S2pZTY3tTQ9cQcLrBW6zrreGVgR3ULtouvbsC7",
-          "verificationMethod": "did:web:green-witness.example#vm-green-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:37:52Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "zBzKKLtmUea4hWPs5F63w29bXvUCPxyN4GzmXWUMNwxWD5otDRnKh2w7Z7e5vVRwhL8RicACbb3yxVmti8ZLqxj9",
-          "verificationMethod": "did:web:blue-witness.example#vm-blue-1"
-        }
-      ]
-    }
-  ]
-}
+        <pre class="example nohighlight" title="Cryptographic event log where a read is performed"
+             data-include="./examples/update.cel">
         </pre>
 
         <section class="normative">
@@ -860,7 +670,7 @@ creating an immutable chain of document history.
 
         <p>
 The [=hashlinking=] mechanism is central to the update operation's security
-properties. Each update event includes a `previousEvent` property containing the
+properties. Each update event includes a `previousEventHash` property containing the
 SHA3-256 hash of the prior event. This cryptographic chain ensures that any
 tampering with historical events would be immediately detectable, as it would
 break the hash links throughout the chain. The combination of cryptographic
@@ -877,158 +687,8 @@ An example of an update operation serialized to a [=cryptographic event log=]
 is shown below:
         </p>
 
-        <pre class="example nohighlight" title="Cryptographic event log after did:cel update">
-{
-  "log": [
-    {
-      "event": {
-        "operation": {
-          "type": "create",
-          "data": {
-            "@context": [
-              "https://www.w3.org/ns/did/v1.1",
-              "https://w3id.org/didcel/v1"
-            ],
-            "id": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB",
-            "assertionMethod": [
-              {
-                "id": "#zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig",
-                "type": "Multikey",
-                "controller": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB",
-                "publicKeyMultibase": "zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig"
-              }
-            ],
-            "recovery": [
-              {
-                "digestMultibase": "zW1GULyxrnPPxFC7NJcK1miKeVJ1Bxvb1ygLGgGRoAgVRKT"
-              }
-            ],
-            "service": {
-              "type": "CelStorageService",
-              "serviceEndpoint": [
-                "https://storage.gamma.example/v1",
-                "https://2001:db8:85a3::8a2e:370:7334/v1",
-                "https://celstorageiu7vnjjbwkhpilnemxj7ase3mhbshg7kx5tfydaniltxjqhy.onion/"
-              ]
-            }
-          }
-        },
-        "proof": {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:26:17Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z5rEayhU67tsThi4ncBWX8okqzmDsBkfVA6dE39QGR9vJwTHz5Qa8vvZRQYvE8imUPwiseFCF2s6bNMpz5MJ5m2Yw",
-          "verificationMethod": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB#zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig"
-        }
-      },
-      "proof": [
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:37:52Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "zSX9hg5VPkxBTHRiZmYpC8Ytx5Bk5n9dpVrnZZ14bXiUoMoqe592zF2ekhD9x9LBgRS2febTu3Eedp87FVheZLxi",
-          "verificationMethod": "did:web:red-witness.example#vm-red-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:37:52Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "zsQFw4FDBvnvQMPRGf2y5D1EiuPxnomTE416QtrpfJEXpKaRB7S2pZTY3tTQ9cQcLrBW6zrreGVgR3ULtouvbsC7",
-          "verificationMethod": "did:web:green-witness.example#vm-green-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:37:52Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "zBzKKLtmUea4hWPs5F63w29bXvUCPxyN4GzmXWUMNwxWD5otDRnKh2w7Z7e5vVRwhL8RicACbb3yxVmti8ZLqxj9",
-          "verificationMethod": "did:web:blue-witness.example#vm-blue-1"
-        }
-      ]
-    },
-    {
-      "event": {
-        "previousEvent": "zW1cK1miKeVLGgGRoAgVRKTJ1Bxvb1ygGULyxrnPPxFC7NJ",
-        "operation": {
-          "type": "update",
-          "data": {
-            "@context": [
-              "https://www.w3.org/ns/did/v1.1",
-              "https://w3id.org/didcel/v1"
-            ],
-            "id": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB",
-            "assertionMethod": [
-              {
-                "id": "#zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig",
-                "type": "Multikey",
-                "controller": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB",
-                "publicKeyMultibase": "zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig"
-              }
-            ],
-            "authentication": [
-              {
-                "id": "#zDnaeinPfANwFVj52nkxPBJ3d6S621NDMJGPFfAZ9WCZZqYf7",
-                "type": "Multikey",
-                "controller": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB",
-                "publicKeyMultibase": "zDnaeinPfANwFVj52nkxPBJ3d6S621NDMJGPFfAZ9WCZZqYf7"
-              }
-            ],
-            "recovery": [
-              {
-                "digestMultibase": "zW1GULyxrnPPxFC7NJcK1miKeVJ1Bxvb1ygLGgGRoAgVRKT"
-              }
-            ],
-            "service": {
-              "type": "CelStorageService",
-              "serviceEndpoint": [
-                "https://storage.gamma.example/v1",
-                "https://2001:db8:85a3::8a2e:370:7334/v1",
-                "https://celstorageiu7vnjjbwkhpilnemxj7ase3mhbshg7kx5tfydaniltxjqhy.onion/"
-              ]
-            }
-          }
-        },
-        "proof": {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:43:45Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z4ncRzZdBTYc7FbX5ib9LMV18RvgTwGRhgaGoPHdFaXh7iBGCs5DiK1Q2BgBmeWUTswewK8bxFeqmgrjJ8DMkQ93a",
-          "verificationMethod": "did:cel:zW1mVBvptfdLyssm7WtqPvCet4zA9PKqzc1hsiHmNN8T1KB#zDnaezPhQRKeXLBs2jjHc8e6gZdhRxvm9fzmrvPf3rqZRDnig"
-        }
-      },
-      "proof": [
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:44:11Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z42oANGtrYgnxuHEHKW8unxPpWeYq1U7TkkFwx6J5CGdqjCEB4bvNiDJ639wFdiyMCGKRbzjWtJHC6JhfyUirG6Rf",
-          "verificationMethod": "did:web:red-witness.example#vm-red-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:44:11Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z3MeMFXXVkxVRMnyGH8LGgyTYAEH4Bs6ESGCktPk6hRto5dRqFqfNuFtEJQUNBRNZeBsVqHqLZFqM4VNLP4RLNF9W",
-          "verificationMethod": "did:web:green-witness.example#vm-green-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-04T20:44:11Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z3pVRdWRRiFwYorthyGJPcALgCKasrgMwTtfcYNnb1L9esf4ERPteUszD5oRH3qJUuqq1C1Z1odsRZEobGoNY2X45",
-          "verificationMethod": "did:web:blue-witness.example#vm-blue-1"
-        }
-      ]
-    }
-  ]
-}
+        <pre class="example nohighlight" title="Cryptographic event log after did:cel update"
+             data-include="./examples/update.cel">
         </pre>
 
         <section class="normative">
@@ -1044,6 +704,19 @@ algorithm takes a [=map=] |didDocument| (the modified [=DID document=]), a [=map
 existing [=cryptographic event log=]) as input. Output is the updated |didDocument|
 with a new proof and the updated |cel| with the new event appended, or an error.
 Whenever this algorithm encodes strings, it MUST use UTF-8 encoding.
+          </p>
+
+          <p class="issue" title="How much forking protection is enough?">
+There is always a possibility that either an attacker, or a dishonest controller,
+will try to fork the history of the cryptographic event log. The specification
+is currently not specific on which protections are used for each attack. One
+approach could have the CEL storage services implement some rules as a part of the
+"registration" step, such as 1) ensure that the log history validates, 2) ensure
+that the log isn't being rolled back, and 3) if there is a conflict on logs
+between multiple CEL storage services, the longest log wins. Another approach
+could utilize a keep-alive approach where a specific offline key is committed
+to and used for updates within a certain time frame. The specification needs to
+detail the approach to provide adequate fork protection for a DID.
           </p>
 
           <ol class="algorithm">
@@ -1107,7 +780,7 @@ Create a new event object ([=map=] |updateEvent|) with the following structure:
 Set |updateEvent|.`event` to a new [=map=].
                     </li>
                     <li>
-Set |updateEvent|.`event`.`previousEvent` to |encodedHash|.
+Set |updateEvent|.`event`.`previousEventHash` to |encodedHash|.
 This creates the [=hashlinked=] chain connecting this event to the previous event.
                     </li>
                     <li>
@@ -1136,7 +809,7 @@ recording the update operation.
 
           <p class="note">
 The update operation maintains the integrity of the [=cryptographic event log=]
-through [=hashlinking=]. Each update event includes a `previousEvent` property
+through [=hashlinking=]. Each update event includes a `previousEventHash` property
 containing the hash of the prior event, creating a verifiable chain that
 prevents tampering and enables auditing of the [=DID document=]'s complete history.
 After updating, implementations invoke the [=witness=] operation to obtain
@@ -1148,199 +821,38 @@ independent attestations of the update event.
       </section>
 
       <section class="normative">
+        <h3>Heartbeat</h3>
+
+        <p>
+        </p>
+
+        <pre class="example nohighlight" title="Cryptographic event log after a heartbeat event"
+             data-include="./examples/heartbeat.cel">
+        </pre>
+
+        <section class="normative">
+          <h4>Document Heartbeat Algorithm</h4>
+
+          <p>
+          </p>
+
+          <ol class="algorithm">
+            <li>
+            </li>
+          </ol>
+
+        </section>
+
+      </section>
+
+      <section class="normative">
         <h3>Deactivate</h3>
 
         <p>
         </p>
 
-        <pre class="example nohighlight" title="Cryptographic event log after did:cel deactivation">
-{
-  "log": [
-    {
-      "@context": [
-        "https://w3id.org/security/data-integrity/v2"
-      ],
-      "event": {
-        "operation": {
-          "type": "create",
-          "data": {
-            "@context": "https://www.w3.org/ns/did/v1.1",
-            "id": "did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE",
-            "assertionMethod": [
-              {
-                "id": "#zDnaei5odivPwAt8q8QFF1cKCtz6gMkVpb9PBacKBzUNcT9UV",
-                "type": "Multikey",
-                "controller": "did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE",
-                "publicKeyMultibase": "zDnaei5odivPwAt8q8QFF1cKCtz6gMkVpb9PBacKBzUNcT9UV"
-              }
-            ],
-            "proof": {
-              "type": "DataIntegrityProof",
-              "cryptosuite": "ecdsa-jcs-2019",
-              "created": "2025-12-03T12:41:21Z",
-              "proofPurpose": "assertionMethod",
-              "proofValue": "z3Z2BFFtVSZPjFGipCazyD8CLp8U5ovw4Mvvk4SkvNL3dgXrAH3PMeTDvxJzS9wd9dUrxLCAr3c53t2CmnNbcgscd",
-              "verificationMethod": "did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE#zDnaei5odivPwAt8q8QFF1cKCtz6gMkVpb9PBacKBzUNcT9UV"
-            }
-          }
-        }
-      },
-      "proof": [
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-03T12:44:32Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z5zybUDUyKkxgmHNYN8a3N4A33rKVv5pmnXHmHvbkXnkXrvfVFTSYNZxUr6C4QqEUoVdHJbtHykzVKr8rDLcE1zU9",
-          "verificationMethod": "did:web:red-witness.example#vm-red-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-03T12:44:32Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z2c9Y4nBvGpQfyTzDcgmEjnVxaMTJNdPxfEmA8i4JwfVTe9jwRFQvSRSodEMqiVGwADMzW7dmqrAjecfm67nda7bW",
-          "verificationMethod": "did:web:green-witness.example#vm-green-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-03T12:44:32Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z9QXFEcjThByMsLj5XbEmRwpzKh2318QvAhrM9V4Ddxni2mSgV1TW2e9J2Eqg4pQr9eWq3eBEa5gdGVon7Ba8d25",
-          "verificationMethod": "did:web:blue-witness.example#vm-blue-1"
-        }
-      ]
-    },
-    {
-      "@context": [
-        "https://w3id.org/security/data-integrity/v2"
-      ],
-      "event": {
-        "previousEvent": "zW1h4Eejr9bT2uZUWVvStrA61QBUUVLgjW8zC63QUvGMbc7",
-        "operation": {
-          "type": "update",
-          "data": {
-            "@context": "https://www.w3.org/ns/did/v1.1",
-            "id": "did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE",
-            "assertionMethod": [
-              {
-                "id": "#zDnaei5odivPwAt8q8QFF1cKCtz6gMkVpb9PBacKBzUNcT9UV",
-                "type": "Multikey",
-                "controller": "did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE",
-                "publicKeyMultibase": "zDnaei5odivPwAt8q8QFF1cKCtz6gMkVpb9PBacKBzUNcT9UV"
-              }
-            ],
-            "authentication": [
-              {
-                "id": "#zDnaevoeYvJDAdbTPzuiBkDyk83VL1cWK68aUGUopvLBuUVMj",
-                "type": "Multikey",
-                "controller": "did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE",
-                "publicKeyMultibase": "zDnaevoeYvJDAdbTPzuiBkDyk83VL1cWK68aUGUopvLBuUVMj"
-              }
-            ],
-            "proof": {
-              "type": "DataIntegrityProof",
-              "cryptosuite": "ecdsa-jcs-2019",
-              "created": "2025-12-03T12:56:25Z",
-              "proofPurpose": "assertionMethod",
-              "proofValue": "z4AAsnpBKdMd5fws1Gjy2gQeyuTBXGM9fXrg3kS53nsF4f2hDGRmLUhWcgnMTuaC3FCAsVNRCbUah4X6Efm5kmA2T",
-              "verificationMethod": "did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE#zDnaei5odivPwAt8q8QFF1cKCtz6gMkVpb9PBacKBzUNcT9UV"
-            }
-          }
-        }
-      },
-      "proof": [
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-14T15:43:08Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z2XXjpGHZMK2c5X2aeqS7AQ1uZDwQpvoNyCPqp4DrTUowqvAKq9NwSRFsBYKg58Hj1DmtRkku4ELPS3UbJQGQYDnk",
-          "verificationMethod": "did:web:red-witness.example#vm-red-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-14T15:43:08Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z4tDHCFcWcpMDenJWSVDEBg2eEDEZq46PL1cG4XKc157QwWfWBPTDwXdzFi6xQoRRhTdRYCvw3oHAxG1oaQ35JzKc",
-          "verificationMethod": "did:web:green-witness.example#vm-green-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-14T15:43:08Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "zPdSjfJ5egfLjRU2Cppt1avQ726acTKgtPJnvJURarMcvEkRJXCDeRKh4bWGreyHKgfvNZxFVe97g4MmsWL7bdKG",
-          "verificationMethod": "did:web:blue-witness.example#vm-blue-1"
-        }
-      ]
-    },
-    {
-      "event": {
-        "previousEvent": "zW1gXfEvNdtiphfwXSJYT3aYEkGrVtm3HNiknPEq8mS6vDK",
-        "operation": {
-          "type": "deactivate",
-          "data": {
-            "@context": "https://www.w3.org/ns/did/v1.1",
-            "id": "did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE",
-            "assertionMethod": [
-              {
-                "id": "#zDnaei5odivPwAt8q8QFF1cKCtz6gMkVpb9PBacKBzUNcT9UV",
-                "type": "Multikey",
-                "controller": "did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE",
-                "publicKeyMultibase": "zDnaei5odivPwAt8q8QFF1cKCtz6gMkVpb9PBacKBzUNcT9UV"
-              }
-            ],
-            "authentication": [
-              {
-                "id": "#zDnaevoeYvJDAdbTPzuiBkDyk83VL1cWK68aUGUopvLBuUVMj",
-                "type": "Multikey",
-                "controller": "did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE",
-                "publicKeyMultibase": "zDnaevoeYvJDAdbTPzuiBkDyk83VL1cWK68aUGUopvLBuUVMj"
-              }
-            ],
-            "proof": {
-              "type": "DataIntegrityProof",
-              "cryptosuite": "ecdsa-jcs-2019",
-              "created": "2025-12-03T13:01:13Z",
-              "proofPurpose": "assertionMethod",
-              "proofValue": "z4H2BvSz53LPmoQphooggR3STDvftuTji7QTTyegGfKxNBfuvTjpNJBBMhkt7VPz2RX2U9i6jtKBXuHXfgjwu3ABB",
-              "verificationMethod": "did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE#zDnaei5odivPwAt8q8QFF1cKCtz6gMkVpb9PBacKBzUNcT9UV"
-            }
-          }
-        }
-      },
-      "proof": [
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-14T15:43:08Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z2XXjpGHZMK2c5X2aeqS7AQ1uZDwQpvoNyCPqp4DrTUowqvAKq9NwSRFsBYKg58Hj1DmtRkku4ELPS3UbJQGQYDnk",
-          "verificationMethod": "did:web:red-witness.example#vm-red-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-14T15:43:08Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "z4tDHCFcWcpMDenJWSVDEBg2eEDEZq46PL1cG4XKc157QwWfWBPTDwXdzFi6xQoRRhTdRYCvw3oHAxG1oaQ35JzKc",
-          "verificationMethod": "did:web:green-witness.example#vm-green-1"
-        },
-        {
-          "type": "DataIntegrityProof",
-          "cryptosuite": "ecdsa-jcs-2019",
-          "created": "2025-12-14T15:43:08Z",
-          "proofPurpose": "assertionMethod",
-          "proofValue": "zPdSjfJ5egfLjRU2Cppt1avQ726acTKgtPJnvJURarMcvEkRJXCDeRKh4bWGreyHKgfvNZxFVe97g4MmsWL7bdKG",
-          "verificationMethod": "did:web:blue-witness.example#vm-blue-1"
-        }
-      ]
-    }
-  ]
-}
+        <pre class="example nohighlight" title="Cryptographic event log after did:cel deactivation"
+             data-include="./examples/deactivate.cel">
         </pre>
 
         <section class="normative">
@@ -1800,10 +1312,10 @@ valid even when presented out of their intended context.
         </p>
 
         <p>
-The [=hashlinking=] of events through the `previousEvent` property provides the
+The [=hashlinking=] of events through the `previousEventHash` property provides the
 primary defense against replay attacks by binding each event to a specific
 position in the event chain. Conforming implementations that verify
-[=cryptographic event logs=] validate that each event's `previousEvent` hash
+[=cryptographic event logs=] validate that each event's `previousEventHash` hash
 correctly matches the hash of the preceding event, and that the chain is
 unbroken from the creation event to the most recent event. Systems that maintain
 state about known [=DIDs=] can track the highest event sequence number they have
@@ -2055,10 +1567,10 @@ verification.
 
         <p>
 The integrity of the [=cryptographic event log=] depends on each event
-containing a correct hash of the previous event in the `previousEvent`
+containing a correct hash of the previous event in the `previousEventHash`
 property, creating an unbroken chain from the creation event to the most
 recent event. If implementations fail to properly verify that each
-`previousEvent` hash matches the actual hash of the preceding event, or if
+`previousEventHash` hash matches the actual hash of the preceding event, or if
 they skip hash verification entirely, attackers could insert fraudulent
 events, remove events from the middle of the chain, or create alternate
 histories without detection. This [=hashlinking=] is fundamental to the security
@@ -2069,7 +1581,7 @@ model—without rigorous verification, the log provides no integrity guarantees.
 Implementations that verify [=cryptographic event logs=] are advised to compute
 the hash of each event using the same canonicalization and hashing algorithms
 specified in the creation and update algorithms, and verify that the computed
-hash matches the `previousEvent` value in the following event. Verification
+hash matches the `previousEventHash` value in the following event. Verification
 processes are encouraged to validate the complete chain from the creation
 event forward without skipping any events, as gaps in verification could hide
 inserted or modified events. The creation event, which has no previous event,
