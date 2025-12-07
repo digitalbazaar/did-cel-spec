@@ -337,6 +337,35 @@ Cases and Requirements section</a> in the [[[CEL]]] specification of interest.
       </section>
 
       <section>
+        <h3>Ecosystem</h3>
+
+        <p>
+The interaction flow between [=DID controllers=], [=witness=] services, storage
+services, and [=verifiers=] follows a standard process. When a [=DID
+controller=] creates or updates a [=DID document=], they generate a signed event
+and append it to their [=cryptographic event log=], creating a [=hashlink=] to
+the previous event. The controller then sends a cryptographic hash of this event
+to their chosen [=witness=] services, which each generate a [=data integrity
+proof=] attesting that they saw the cryptographic hash at a particular time, and
+then return the [=witness=] proof to the controller. The controller collects
+these [=witness=] proofs, attaches them to the event in the log, and publishes
+the complete [=cryptographic event log=] to one or more storage services.
+        </p>
+
+        <p>
+When a [=verifier=] needs to validate a [=DID=], the controller provides the
+[=DID=] and a storage location that can be used to retrieve the [=cryptographic
+event log=] from the storage services. The [=verifier=] then downloads the log
+and verifies the [=hashlinked=] chain integrity. It does this by checking that
+operation proofs are signed by authorized keys from the [=DID document=], the
+[=hashlinks=] are correct, the operations performed are valid, and ensures that
+[=witness=] proofs meet their requirements. This separation of concerns between
+controllers, [=witnesses=], storage, and verification enables a fully
+decentralized system where no single party has unilateral control.
+        </p>
+      </section>
+
+      <section>
         <h3>Terminology</h3>
 
         <p>
@@ -427,6 +456,112 @@ A simple example of a valid `did:cel` DID is:
       <pre class="example nohighlight" title="A valid did:cel identifier">
 did:cel:zW1jPC3ViLfgPJX6KaPMhymin3LpATUgYTS7N58FLHtQ4HE
       </pre>
+
+    </section>
+
+
+    <section class="normative">
+      <h2>Witness Services</h2>
+
+      <p>
+[=Witness=] services are independent entities that provide cryptographic attestations
+for events in [=cryptographic event logs=], serving as a cornerstone of the `did:cel`
+method's decentralized architecture. Unlike centralized timestamp authorities or
+blockchain validators, [=witnesses=] operate autonomously without controlling or
+storing the [=DIDs=] they attest to, creating [=data integrity proofs=] that confirm
+events existed at specific points in time. This [=witness=]-based approach enables
+distributed trust without requiring expensive consensus mechanisms, heavy-weight
+infrastructure, or dependency on any single service provider. [=DID controllers=]
+select which [=witnesses=] to use for attestations, and because [=witnesses=] are
+independent and interchangeable, the system remains resilient even if individual
+[=witnesses=] become unavailable, compromised, or act maliciously.
+      </p>
+
+      <section>
+        <h3>Role of Witnesses</h3>
+
+        <p>
+[=Witnesses=] fulfill several critical roles in the `did:cel` ecosystem. They
+provide temporal anchoring by generating timestamped cryptographic proofs that
+establish when events occurred, creating verifiable evidence that a [=DID
+controller=] performed an operation at a specific point in time. They enable
+distributed validation by offering independent third-party attestation,
+preventing any single entity from having unilateral control over the validity of
+[=DID=] operations. [=Witnesses=] also increase resistance to tampering and
+fraud by creating multiple independent records of events that would need to be
+simultaneously compromised to forge a fraudulent history. Importantly,
+[=witnesses=] do not validate the semantic correctness of [=DID document=]
+changes or make authorization decisions—they simply attest that an event with
+specific cryptographic hash existed at the time of [=witnessing=]. This limited
+scope keeps [=witness=] operations simple, efficient, and resistant to coercion
+and censorship, as [=witnesses=] cannot be compelled to make subjective
+judgments about the legitimacy of [=DID=] operations.
+        </p>
+      </section>
+
+      <section>
+        <h3>Witness Selection</h3>
+
+        <p>
+Selecting the appropriate number of [=witnesses=] involves balancing security
+requirements against operational complexity and cost. Using more [=witnesses=]
+increases security by requiring attackers to compromise a larger number of
+independent services, but also increases the time, storage cost, network
+overhead, and time cost of obtaining attestations for each operation. Using too
+few [=witnesses=] creates risk that a single compromised or unavailable
+[=witness=] can block operations or enable fraud. For most use cases, a minimum
+of three independent [=witnesses=] from different operators and jurisdictions
+provides reasonable security while maintaining operational efficiency.
+High-security applications might require more [=witnesses=] with geographic and
+organizational diversity, while low-stakes applications might accept a single
+[=witness=] to minimize overhead.
+        </p>
+        <p>
+[=DID controllers=] are advised to select [=witnesses=] operated by independent
+entities with diverse operational characteristics, avoiding [=witnesses=] that
+share infrastructure, jurisdiction, or governance that could create correlated
+failures. [=Verifiers=] establish their own policies about minimum [=witness=]
+thresholds they will accept, potentially requiring attestations from a majority
+or super-majority of a controller's chosen [=witnesses=] before trusting
+operations.
+        </p>
+        <p>
+While governance and guidance around what makes an acceptable witness is out of
+scope for this specification, it is expected that verifier communities will
+publish lists of witnesses that they find acceptable to help controller's
+determine which ones to use to maximize trust in their [=DIDs=].
+        </p>
+      </section>
+
+      <section>
+        <h3>Oblivious Witnessing</h3>
+
+        <p>
+Oblivious [=witnessing=] is an important privacy and efficiency feature where
+[=witnesses=] attest to the hash of an event, including the [=hashlink=] to the
+previous event, rather than the contents of the event. When a [=DID controller=]
+requests [=witnessing=], they compute a cryptographic hash of the event. They
+send only this cryptographic hash to [=witness=] services, which create [=data
+integrity proofs=] over the hash without ever seeing the actual event data. The
+[=witness=] returns a proof attesting that it witnessed the cryptographic hash
+at a specific time, providing temporal evidence without requiring disclosure of
+potentially sensitive information in the [=DID document=] or operation.
+        </p>
+
+        <p>
+This approach offers several benefits: it protects the privacy of controller
+[=DID=] operations by preventing [=witnesses=] from seeing [=DID document=]
+contents, reduces the bandwidth and processing requirements for [=witnessing=]
+by transmitting only hashes rather than full documents, enables [=witnesses=] to
+operate as simple, stateless services that don't need to understand [=DID=]
+semantics, and prevents [=witnesses=] from being coerced to make judgments about
+the legitimacy of [=DID=] operations since they have no visibility into what
+they are attesting. [=Verifiers=] can validate oblivious [=witness=] proofs by
+computing the same hash of the event and confirming that the [=witness=] proof
+covers that hash, establishing the temporal attestation without compromising the
+privacy benefits.
+        </p>
+      </section>
 
     </section>
 
