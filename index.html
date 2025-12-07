@@ -99,6 +99,9 @@
             value: "DID Use Cases and Requirements",
             href: "https://www.w3.org/TR/did-use-cases/"
           }, {
+            value: "Cryptographic Event Log v0.1",
+            href: "https://w3c-ccg.github.io/cel-spec/"
+          }, {
             value: "DID Core Implementation Report",
             href: "https://w3c.github.io/did-test-suite/"
           }]
@@ -248,6 +251,73 @@ strategies. Finally, the <a href="#security-considerations">Security
 Considerations</a> section addresses potential security risks and provides
 guidance for secure implementation and deployment of the `did:cel` method.
       </p>
+
+      <section>
+        <h3>Goals</h3>
+
+        <p>
+This specification optimizes for the following design goals:
+        </p>
+
+        <dl>
+          <dt>Minimal Infrastructure</dt>
+          <dd>
+A single individual with a file hosting location can create and control multiple
+[=DIDs=] in a way that the identifiers are highly-available and globally
+recognized.
+          </dd>
+          <dt>Near-zero Cost</dt>
+          <dd>
+The cost to create and control multiple [=DIDs=] is not burdensome to at least
+70% of the world's population, which are the number of people that have access
+to the Internet as of 2025.
+          </dd>
+          <dt>Censorship and Coercion Resistant</dt>
+          <dd>
+The witness and file storage services used to manage a [=DID=] cannot censor
+or coerce an individual or organization to any significant degree.
+          </dd>
+          <dt>No Centralization</dt>
+          <dd>
+Witness and file storage services are abundant, easy to operate at scale, and
+are easily replaceable if they become non-responsive or compromised.
+          </dd>
+        </dl>
+
+      </section>
+
+      <section>
+        <h3>Focal Use Cases</h3>
+
+        <p>
+The following focal use cases have been identified as ones that this
+specification is capable of addressing.
+        </p>
+
+        <dl>
+          <dt>Self-hosted Management</dt>
+          <dd>
+Joe would like to create and manage his [=DIDs=] using software and
+infrastructure that he controls.
+          </dd>
+          <dt>Custodial Management</dt>
+          <dd>
+Wilhelm would like to use [=DIDs=] but does not have the technical expertise to
+self-host and uses a well-reviewed service provider to manage his [=DIDs=] on
+his behalf, but enables his friends to help him leave the service if they work
+against his interests.
+          </dd>
+          <dt>Organizational Management</dt>
+          <dd>
+LittleCorp uses [=DIDs=] that represent operational divisions within the
+organization to issue [=verifiable credentials=]. The organization's security
+requirements related to government-approved cryptography, key rotation
+requirements, and recoverability after compromise are all addressable with
+the `did:cel` [=DID method=].
+          </dd>
+        </dl>
+
+      </section>
 
       <section>
         <h3>Terminology</h3>
