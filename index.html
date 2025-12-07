@@ -860,6 +860,23 @@ and resistance to single points of failure in the DID method infrastructure.
         </pre>
 
         <section class="normative">
+          <h4>Compression</h4>
+
+          <p>
+[=Cryptographic event logs=] can become sizeable after a few decades of usage.
+For example, a production-grade organizational [=DID document=] that requires
+key rotations every three months, with three witnesses per event, can grow to be
+roughly 5MB in size over those 30 years. However, the contents of the file (such
+as identifiers) are largely repetitive. Performing compression on the file can
+result in a 5MB log being reduced to roughly 600KB in size. These significant
+savings in both network bandwidth and storage make it such that all storage and
+read operations benefit from the usage of compression. Therefore, all
+[=cryptographic event logs=] MUST be transmitted using gzip compression.
+          </p>
+
+        </section>
+
+        <section class="normative">
           <h4>Document Read Algorithm</h4>
 
           <p>
@@ -2163,5 +2180,72 @@ and providing feedback on the specification (in alphabetical order):
 TBD...
     </p>
   </section>
-  </body>
+
+  <section class="appendix informative">
+    <h2>Usage in Protocols</h2>
+
+    <p>
+This section
+    </p>
+    <section class="informative">
+      <h3>DID Authentication</h3>
+
+      <p>
+The example below demonstrates a Verifiable Presentation Request query
+requesting that the [=holder=] verify control of a `did:cel` [=DID=]:
+      </p>
+
+      <pre class="example" title="A DID Authentication request">
+{
+  "query": [{
+    "type": "DIDAuthentication",
+    "acceptedMethods": [{"method": "cel"}]
+  }],
+  "challenge": "99612b24-63d9-11ea-b99f-4f66f3e4f81a",
+  "domain": "domain.example"
+}
+      </pre>
+
+      <p>
+When using `did:cel`, the [=holder=] responds with the following DID
+Authentication response:
+      </p>
+
+      <pre class="example" title="A DID Authentication response">
+{
+  "@context": ["https://www.w3.org/ns/credentials/v2"],
+  "type": "VerifiablePresentation",
+  "holder": "did:cel:zW1poyeoHaT1WftFBG8WKa6fCaH98tbKKMrkJWDqFeohTz1?storage=https%3A%2F%2Fstorage.example%2Fdids%2F",
+  "proof": {
+    "type": "DataIntegrityProof",
+    "cryptosuite": "ecdsa-rdfc-2019",
+    "verificationMethod": "did:cel:zW1poyeoHaT1WftFBG8WKa6fCaH98tbKKMrkJWDqFeohTz1?storage=https%3A%2F%2Fstorage.example%2Fdids%2F#zDnaeU8aVJn9pZjH7f249geMiz9UTRjfXUcc5pN4QsxVte57q",
+    "challenge": "99612b24-63d9-11ea-b99f-4f66f3e4f81a",
+    "domain": "domain.example",
+    "created": "2025-12-07T14:58:42Z",
+    "proofPurpose": "authentication",
+    "proofValue": "z4vUFeRUpqaFLiSwkzN2Qiugw1yeA2DgJC6MTpqiwwzBkSNdaNMSYXAgLWC8UsJFb8dymbDQiBaQySuWGjMxBhGiZ"
+  }
+}
+      </pre>
+
+      <p>
+The DID Authentication response above instructs the [=verifier=] that the
+`did:cel` [=cryptographic event log=] for the provided [=DID=] can be found by
+fetching the following URL:
+`https://storage.example/dids/did:cel:zW1poyeoHaT1WftFBG8WKa6fCaH98tbKKMrkJWDqFeohTz1.cel.gz`.
+      </p>
+    </section>
+
+    <section class="informative">
+      <h3>Verifiable Credentials</h3>
+
+      <p>
+
+      </p>
+    </section>
+
+  </section>
+
+</body>
 </html>
