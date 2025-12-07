@@ -2241,8 +2241,44 @@ fetching the following URL:
       <h3>Verifiable Credentials</h3>
 
       <p>
+The example below demonstrates the use of a `did:cel` [=DID=] within a
+[=verifiable credential=]:
+      </p>
+
+      <pre class="example" title="A verifiable credential using did:cel DIDs">
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://www.w3.org/ns/credentials/examples/v2"
+  ],
+  "type": [
+    "VerifiableCredential",
+    "ExampleDegreeCredential"
+  ],
+  "issuer": "did:cel:zW1poyeoHaT1WftFBG8WKa6fCaH98tbKKMrkJWDqFeohTz1?storage=https%3A%2F%2Funiversity.example%2Fdids%2F",
+  "validFrom": "2010-01-01T00:00:00Z",
+  "credentialSubject": {
+    "id": "did:cel:zW1aH98tbKKqFeohTz1poyeoHMrkJWDaT1WftFBG8WKa6fC?storage=https%3A%2F%2Fstorage.example%2Fdids%2F",
+    "degree": {
+      "type": "ExampleBachelorDegree",
+      "name": "Bachelor of Science and Arts"
+    }
+  },
+  "proof": {
+    "type": "DataIntegrityProof",
+    "created": "2025-12-07T19:47:10Z",
+    "verificationMethod": "did:cel:zW1poyeoHaT1WftFBG8WKa6fCaH98tbKKMrkJWDqFeohTz1?storage=https%3A%2F%2Funiversity.example%2Fdids%2F#zDnaeU8aVJn9pZjH7f249geMiz9UTRjfXUcc5pN4QsxVte57q",
+    "cryptosuite": "ecdsa-rdfc-2019",
+    "proofPurpose": "assertionMethod",
+    "proofValue": "z3oB59kTTajyXKx3FYJGk9Xvb158rLG2Pq6FQSNaGL6J9ieA3ipXGot5zWME4TXisz1vpfTo8DFjLpBwe4afL1r27"
+  }
+}
+      </pre>
+
+      <p>
 
       </p>
+
     </section>
 
   </section>
